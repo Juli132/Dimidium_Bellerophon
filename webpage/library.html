@@ -1,0 +1,102 @@
+<!--to be updated-->
+<!-- added some words and fixed descriptions-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bellerophon | Library</title>
+    <link rel="stylesheet" href="/styles/library.css">
+</head>
+<body>
+    <!-- link top left -->
+    <div class="top-logo">
+        <a href="ide.html" class="logo-link">
+            <div class="logo-box">BELLEROPHON</div>
+        </a>
+    </div>
+
+    <div class="grammar-section">
+    <h3>Grammar Reference</h3>
+   <div id="grammar-list">
+
+<!-- Macro Structure -->
+<div class="grammar-category">
+<h4>Macro Structure</h4>
+<div class="grammar-item">M.title <span>"Macro Name"</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">M.call <span>"MacroName"</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">M.end <span>end macro</span> <a href="#" class="add-btn">+</a></div>
+</div>
+
+<!-- Motion -->
+<div class="grammar-category">
+<h4>Motion</h4>
+<div class="grammar-item">Home <span>or Home -> x= y= z=</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">Move <span>left | right | center</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">MoveTo <span>x= y= z= e=;</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">Absolute <span>G90 positioning</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">Relative <span>G91 positioning</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">RelativeExtrusion <span>M83</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">ResetExtruder <span>G92 E0</span> <a href="#" class="add-btn">+</a></div>
+</div>
+
+<!-- Temperature -->
+<div class="grammar-category">
+<h4>Temperature</h4>
+<div class="grammar-item">Heat <span>bed|extruder|chamber = temp (waits until reached)</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">Set_Heater_Temperature <span>bed|extruder|chamber = temp (no wait)</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">WaitForTemp <span>bed|extruder|chamber (blocks until reached)</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">Cooldown <span>all | bed | extruder | chamber (optional target)</span> <a href="#" class="add-btn">+</a></div>
+</div>
+
+<!-- Printer Control -->
+<div class="grammar-category">
+<h4>Printer Control</h4>
+<div class="grammar-item">SetSpeed <span>= value</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">SetFan <span>= speed</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">TIMEOUT_SET <span>seconds (idle timeout)</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">Dwell <span>number (s | ms optional)</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">Pause <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">Resume <a href="#" class="add-btn">+</a></div>
+</div>
+
+<!-- Calibration -->
+<div class="grammar-category">
+<h4>Calibration</h4>
+<div class="grammar-item">Level <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">BedMeshCalibrate <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">LoadBedMesh <span>"profile"</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">ProbeCalibrate <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">SetPressureAdvance <span>value</span> <a href="#" class="add-btn">+</a></div>
+</div>
+
+<!-- Flow Control -->
+<div class="grammar-category">
+  <h4>Flow Control & Loops</h4>
+  <div class="grammar-item">if condition <a href="#" class="add-btn">+</a></div>
+  <div class="grammar-item">endif <a href="#" class="add-btn">+</a></div>
+  <div class="grammar-item">repeat count <span>…</span> <a href="#" class="add-btn">+</a></div>
+  <div class="grammar-item">brepeat count <span>uses i</span> <a href="#" class="add-btn">+</a></div>
+  <div class="grammar-item">end <span>end loop</span> <a href="#" class="add-btn">+</a></div>
+  <div class="grammar-item">Respond MSG <span>"message"</span> <a href="#" class="add-btn">+</a></div>
+</div>
+
+<!-- Expressions -->
+<div class="grammar-category">
+<h4>Expressions</h4>
+<div class="grammar-item">Functions <span>sin | cos | tan | sqrt | abs | sign</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">Constants <span>pi | i (iterator)</span> <a href="#" class="add-btn">+</a></div>
+<div class="grammar-item">Operators <span>+ - * / ^</span> <a href="#" class="add-btn">+</a></div>
+</div>
+
+<!-- File Execution -->
+<div class="grammar-category">
+<h4>File Execution</h4>
+<div class="grammar-item">PRINTFILE <span>"file.gcode"</span> <a href="#" class="add-btn">+</a></div>
+</div>
+
+</div>
+    <script src="/scripts/mscript.js"></script>
+</body>
+</html>

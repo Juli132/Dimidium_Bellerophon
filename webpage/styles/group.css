@@ -1,0 +1,216 @@
+body {
+    margin: 0;
+    font-family: "Orbitron", sans-serif;
+    background-color: #0a0a0a;
+    background-image:
+        linear-gradient(110deg, #0a0a0a 0%, #c50000 25%, #ff6f3c 50%, #c50000 75%, #fffefe 45%),
+        linear-gradient(70deg, #0a0a0a 45%, #ff4500 20%, #b30000 50%, #ff6f3c 80%, #0a0a0a 100%),
+        radial-gradient(circle at center, rgba(255,140,0,0.1) 0%, transparent 70%);
+    background-blend-mode: overlay;
+    color: #e0ffe5;
+    height: 100vh;
+    overflow: hidden;
+    background-size: 120% 120%;
+}
+
+#group-title {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 2rem;
+}
+
+#printer-dashboard {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    padding: 20px;
+}
+
+.printer-card {
+    width: 450px;
+    height: 650px;
+    position: relative;
+    background:
+        linear-gradient(rgba(255, 255, 255, 0.021) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.027) 1px, transparent 1px),
+        rgba(10, 10, 10, 0.25);
+    background-size: 80px 80px; 
+    backdrop-filter: blur(90px);
+    -webkit-backdrop-filter: blur(14px);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.26);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.printer-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(106, 255, 163, 0.062), 0 0 40px rgba(106, 255, 163, 0.1);
+}
+
+.printer-card h3 {
+    margin: 0 0 5px 0;
+    font-size: 1.2rem;
+    letter-spacing: 1px;
+}
+
+.printer-card p {
+    margin: 8px 0 0 0;
+    font-size: 0.9rem;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    background-color: #6affa3;
+    border-radius: 50%;
+    margin-bottom: 15px;
+    box-shadow: 0 0 8px #6affa3;
+}
+
+.status-text {
+    color: #6affa3;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(197, 0, 0, 0.2);
+    color: #ff4d4d;
+    border: 1px solid #c50000;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    font-family: sans-serif;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s;
+    z-index: 10;
+}
+
+.delete-btn:hover {
+    background: #c50000;
+    color: white;
+    box-shadow: 0 0 10px #c50000;
+}
+
+#sidebar {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 1001;
+}
+
+a.backtom {
+    text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    color: #effcfc;
+    background-color: #010301;
+    box-shadow: 0 0 8px #0b0f0e;
+    transition: all 0.2s ease-in-out;
+    display: inline-block;
+}
+
+a.backtom:hover {
+    background-color: #6affa380;
+    color: #000;
+    box-shadow: 0 0 12px #6affa380;
+}
+
+#add-printer-btn {
+    padding: 12px 18px;
+    font-size: 16px;
+    border-radius: 10px;
+    background-color: rgba(0,0,0,0.7);
+    color: #6affa3;
+    box-shadow: 0 0 10px rgba(106,255,163,0.4);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+#add-printer-btn:hover {
+    background-color: rgba(106, 255, 163, 0.384);
+    color: white;
+}
+
+.modal {
+    display: none; 
+    position: fixed;
+    z-index: 2000;
+    left: 0; top: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: #0a0a0a;
+    margin: 15% auto;
+    padding: 30px;
+    border: 2px solid #6affa327;
+    border-radius: 20px;
+    width: 300px;
+    text-align: center;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    box-shadow: none;
+}
+
+.modal-content label {
+    display: block;
+    font-size: 0.8rem;
+    margin-top: 10px;
+    color: #888;
+    text-align: left;
+    margin-left: 5%;
+}
+
+.modal-content input, 
+.modal-content select {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    background: #1a1a1a;
+    border: 1px solid #444;
+    color: white;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    border-radius: 5px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+#save-printer-btn { 
+    background: #6affa3; 
+    color: black; 
+}
+
+#close-printer-modal { 
+    background: #c50000; 
+    color: white; 
+}

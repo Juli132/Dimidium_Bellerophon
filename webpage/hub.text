@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Jupitore + Mainsail</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles/hub.css">
+
+</head>
+<body>
+
+<!-- Sidebar -->
+<div id="sidebar">
+    <div id="sidebar-container">
+        <a href="index.html" class="backtom">Jupitore</a>
+        <button id="open-folder-btn">Open Folder</button>
+    </div>
+</div>
+<!-- Floating Mainsail window -->
+<div id="mainsail-window">
+  <iframe src="..."></iframe>
+</div>
+<script src="/scripts/hubfolder.js"></script>
+</body>
+</html>

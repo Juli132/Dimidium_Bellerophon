@@ -1,0 +1,792 @@
+// this program is the heart of the compiler. it traverses the parse tree and generates G-code based on the rules defined in the visitor methods. 
+// each method corresponds to a specific rule in the grammar and is responsible for translating that rule into G-code. 
+// the visitor pattern allows us to separate the logic of code generation from the structure of the parse tree
+//  making it easier to maintain and extend in the future.
+package maindeveloper;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.List;
+import java.util.Stack;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
+import jupitore.gen.*;
+
+public class GCodeVisitor extends JupitoreBaseVisitor<String> {
+// ADDED 4/10/2026
+protected PrinterSettings settings = new PrinterSettings();
+protected boolean enablePaging = false;
+protected boolean autoExtrudeEnabled = false;
+// Temporary storage for a single move (used in visitCoordList)
+private double targetX = Double.NaN;
+private double targetY = Double.NaN;
+private double targetZ = Double.NaN;
+private boolean hasManualE = false;
+private double manualEValue = 0.0;
+private boolean hasAutoE = false;   // user wrote "E" without value
+protected double centerX = 0; // <-- Jrepeat center for X
+protected double centerY = 0; // <-- Jrepeat center for Y
+//NEW LIMITER TO ENSURE SAFETY. THIS IS A HARD LIMITER THAT THROWS AN ERROR IF EXCEEDED. THE FRONTEND SHOULD CATCH THIS AND ALERT THE USER.
+protected HardwareLimiter limiter;
+// new function
+public void setEnablePaging(boolean enable) {
+    System.out.println("VISITOR LOG: Paging has been set to: " + enable);
+    this.enablePaging = enable;
+}
+
+
+
+public GCodeVisitor(PrinterProfile profile) {
+     System.out.println("=== DEBUG: GCodeVisitor constructor ===");
+    System.out.println("Profile maxX = " + profile.getMaxX());
+    System.out.println("Profile maxY = " + profile.getMaxY());
+    System.out.println("Profile maxZ = " + profile.getMaxZ());
+    this.limiter = new HardwareLimiter(profile.getMaxX(), profile.getMaxY(), profile.getMaxZ());
+    this.settings.setNozzleDiameter(profile.getNozzleDiameter());
+    this.settings.setFilamentDiameter(profile.getFilamentDiameter());
+    this.settings.setLayerHeight(profile.getLayerHeight());
+    this.settings.setExtrusionMultiplier(profile.getExtrusionMultiplier());
+}
+    /** 
+     * @param ctx
+     * @return String
+     */
+    // 4/10/2026 adding paging support to the visitor! lets see if this actually works
+    @Override
+    public String visitProgram(JupitoreParser.ProgramContext ctx) {
+     if (this.enablePaging) {
+        try {
+            // Create a temporary file to store long gcodes
+            File tempFile = File.createTempFile("bph_scratch_", ".gcode");
+            System.out.println("PAGING ACTIVE: Writing to " + tempFile.getAbsolutePath());
+            tempFile.deleteOnExit(); // OS cleans this up when the IDE closes... right? 
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+                for (JupitoreParser.MacroContext macro : ctx.macro()) {
+                    String macroCode = visit(macro);
+                    if (macroCode != null && !macroCode.isEmpty()) {
+                        writer.write(macroCode);
+                        writer.write("\n");
+                        // This flushes the RAM so the garbage collector 
+                        //can take the space used by the 'macroCode' string.
+                        writer.flush(); 
+                    }
+                }
+            }
+            
+            return "SUCCESS_PAGED:" + tempFile.getAbsolutePath();
+            
+        } catch (IOException e) {
+            throw new RuntimeException("Memory Paging Failed: " + e.getMessage());
+        }
+    }
+
+    StringBuilder gcode = new StringBuilder();
+    for (JupitoreParser.MacroContext macro : ctx.macro()) {
+        String macroCode = visit(macro);
+        if (macroCode != null && !macroCode.isEmpty()) {
+            gcode.append(macroCode).append("\n");
+        }
+    }
+
+    String result = gcode.toString();
+    return result.isEmpty() ? "" : result;
+    }
+
+ /** 
+  * @param ctx
+  * @return String
+  */
+ @Override
+public String visitMacro(JupitoreParser.MacroContext ctx) {
+    // Reset positions for independent macro execution
+    currentX = 0;
+    currentY = 0;
+    currentZ = 0;
+    relativeMode = false;  // start in absolute by default
+
+    StringBuilder gcode = new StringBuilder();
+
+    if (ctx.TITLE() != null && ctx.STRING() != null) {
+        String macroName = ctx.STRING().getText().replace("\"", "");
+        gcode.append("[gcode_macro ").append(macroName).append("]\n");
+        gcode.append("gcode:\n");
+    }
+
+    if (ctx.statement() != null && !ctx.statement().isEmpty()) {
+        for (JupitoreParser.StatementContext stmt : ctx.statement()) {
+            String stmtCode = visit(stmt);
+            if (stmtCode != null && !stmtCode.isEmpty()) {
+                for (String line : stmtCode.split("\n")) {
+                    if (!line.isBlank()) {
+                        gcode.append("  ").append(line).append("\n");
+                    }
+                }
+            }
+        }
+    }
+    limiter.resetToGlobal(); // Reset limits after each macro to ensure safety for the next macro
+    return gcode.toString();
+}
+
+    /** 
+     * @param ctx
+     * @return String
+     */
+    @Override
+    public String visitStatement(JupitoreParser.StatementContext ctx) {
+
+        //System.out.println("DEBUG: Visiting statement: " + ctx.getText());
+
+        if (ctx.HOME() != null) {
+            if (ctx.coordList() != null) {
+                return "G28 " + visit(ctx.coordList()) + "\n";
+            }
+            return "G28\n";
+        }
+        if (ctx.repeat_statement() != null) {
+            return visit(ctx.repeat_statement());
+        }
+
+        if (ctx.brepeat_statement() != null) {
+            return visit(ctx.brepeat_statement());
+        } 
+
+        // added, i forgot this
+          if (ctx.if_statement() != null) {
+        return visit(ctx.if_statement());
+    }
+        if (ctx.MOVE() != null) {
+            StringBuilder gcode = new StringBuilder("G1 ");
+            if (ctx.DIRECTION() != null) {
+                switch (ctx.DIRECTION().getText()) {
+                    case "left":
+                        gcode.append("X-1");
+                        break;
+                    case "right":
+                        gcode.append("X1");
+                        break;
+                    case "center":
+                        gcode.append("X0 Y0");
+                        break;
+                    case "up":
+                        gcode.append("Z1");
+                        break;
+                    case "down":
+                        gcode.append("Z-1");
+                        break;
+                }
+            }
+
+            return gcode.toString() + "\n";
+        }
+
+        // here is where i added REPEAT statement implementation
+
+        // SET_HEATER: set temperature and does not wait. REMEMEBR
+        // added chamber
+        if (ctx.SET_HEATER() != null) {
+            if (ctx.TARGET() != null && ctx.NUMBER() != null) {
+                String target = ctx.TARGET().getText().toLowerCase();
+                String value = ctx.NUMBER().getText();
+
+                switch (target) {
+                    case "extruder":
+                        return "M104 S" + value + "\n";
+                    case "bed":
+                        return "M140 S" + value + "\n";
+                    case "chamber":
+                        return "M141 S" + value + "\n"; // Chamber heater
+
+                }
+            }
+        }
+
+        // HEAT: set temperature AND wait. ADDED CHAMBER
+        if (ctx.HEAT() != null) {
+            if (ctx.TARGET() != null && ctx.NUMBER() != null) {
+                String target = ctx.TARGET().getText().toLowerCase();
+                String value = ctx.NUMBER().getText();
+
+                switch (target) {
+                    case "extruder":
+                        return "M109 S" + value + "\n";
+                    case "bed":
+                        return "M190 S" + value + "\n";
+                    case "chamber":
+                        return "M141 S" + value + "\n"; // Chamber
+
+                }
+            }
+        }
+
+        if (ctx.MOVEEX() != null) {
+            if (ctx.coordList() != null) {
+                return "G1 " + visit(ctx.coordList()) + "\n";
+            }
+        }
+
+        if (ctx.PAUSE() != null) {
+            return "PAUSE\n";
+        }
+        if (ctx.RESUME() != null) {
+
+            return "RESUME\n";
+        }
+
+        if (ctx.RESPOND() != null) {
+            if (ctx.STRING() != null) {
+                String message = ctx.STRING().getText().replace("\"", "");
+                return "RESPOND MSG=\"" + message + "\"\n";
+            }
+        }
+        // added relativemode to fix the coords issue
+        if (ctx.ABSOLUTE() != null) {
+            relativeMode = false;
+            return "G90\n";
+        }
+
+        if (ctx.RELATIVE() != null) {
+            relativeMode = true;
+            return "G91\n";
+        }
+
+        // add the rest here
+
+        // klipper macro caller
+        if (ctx.CALL() != null && ctx.STRING() != null) {
+            String macroName = ctx.STRING().getText().replace("\"", "");
+            return macroName + "\n";
+        }
+        // this is just testing
+
+        // not to be confused with heat. this one waits for an existing temperature
+        // have to remind myself. so it does not change STATE. ADDED CHAMBER
+
+        if (ctx.WAITFORTEMP() != null && ctx.TARGET() != null) {
+            String target = ctx.TARGET().getText().toLowerCase();
+            switch (target) {
+                case "extruder":
+                    return "M109\n";
+                case "bed":
+                    return "M190\n";
+                case "chamber":
+                    return "M141\n"; // Wait for chamber
+
+            }
+        }
+
+        // semantic different but the same. for convenience. might change later.
+        if (ctx.LEVEL() != null || ctx.BED_MESH_CALIBRATE() != null) {
+            return "BED_MESH_CALIBRATE\n";
+        }
+
+        // timeout
+        if (ctx.TIMEOUT_SET() != null && ctx.NUMBER() != null) {
+
+            return "SET_IDLE_TIMEOUT TIMEOUT=" + ctx.NUMBER().getText() + "\n";
+
+        }
+
+        // RELATIVE EXTRUSION check documentation
+        if (ctx.RELATIVEEXTRUSION() != null) {
+
+            return "M83\n";
+        }
+
+        // LOADING MESH
+        if (ctx.LOAD_BED_MESH() != null && ctx.STRING() != null) {
+            String pr = ctx.STRING().getText().replace("\"", "");
+            return "BED_MESH_PROFILE LOAD=" + pr + "\n";
+
+        }
+        // reeset extruder
+        if (ctx.RESET_EXTRUDER() != null) {
+            return "G92 E0\n";
+
+        }
+
+        // PROBE CALIBRATE
+        if (ctx.PROBE_CALIBRATE() != null) {
+            return "PROBE_CALIBRATE\n";
+
+        }
+
+        // cooldown
+
+        if (ctx.COOLDOWN() != null) {
+            // no target? turn off all heaters plz
+            if (ctx.TARGET() == null) {
+                return "TURN_OFF_HEATERS\n";
+            }
+
+            // target exists? handle specific heater
+            String t = ctx.TARGET().getText().toLowerCase();
+            switch (t) {
+                case "extruder":
+                    return "M104 S0\n";
+                case "bed":
+                    return "M140 S0\n";
+                case "chamber":
+                    return "M141 S0\n"; // for chamber
+
+            }
+        }
+        // dwell
+        if (ctx.DWELL() != null && ctx.NUMBER() != null) {
+            double value = Double.parseDouble(ctx.NUMBER().getText());
+            String unit = "ms"; // default unit is milliseconds
+
+            if (ctx.getChildCount() > 2) {
+                String u = ctx.getChild(2).getText().toLowerCase();
+                if (u.equals("s")) {
+                    value *= 1000; // convert seconds to milliseconds
+                } else if (u.equals("ms")) {
+                    // already milliseconds, do nothing
+                } else {
+                    // unknown unit, fallback to milliseconds
+                }
+            }
+
+            return "G4 P" + ((int) value) + "\n";
+        }
+
+        // set speed.
+        if (ctx.SET_SPEED() != null && ctx.NUMBER() != null) {
+            return "G1 F" + ctx.NUMBER().getText() + "\n";
+        }
+
+        if (ctx.PRINTFILE() != null && ctx.STRING() != null) {
+            String file = ctx.STRING().getText().replace("\"", "");
+            return "SDCARD_PRINT_FILE FILENAME=\"" + file + "\"\n";
+        }
+
+        if (ctx.SET_PRESSURE_ADVANCE() != null && ctx.NUMBER() != null) {
+            return "SET_PRESSURE_ADVANCE ADVANCE=" + ctx.NUMBER().getText() + "\n";
+        }
+
+        if (ctx.SET_FAN() != null && ctx.NUMBER() != null) {
+            return "SET_FAN SPEED=" + ctx.NUMBER().getText() + "\n";
+        }
+
+
+if (ctx.SET_NOZZLE() != null) {
+    double val = Double.parseDouble(ctx.NUMBER().getText());
+    settings.setNozzleDiameter(val);
+    return "";
+}
+if (ctx.SET_FILAMENT() != null) {
+    double val = Double.parseDouble(ctx.NUMBER().getText());
+    settings.setFilamentDiameter(val);
+     System.out.println("DEBUG: Filament diameter set to " + val);
+    return "";
+}
+if (ctx.SET_LAYER_HEIGHT() != null) {
+    double val = Double.parseDouble(ctx.NUMBER().getText());
+    settings.setLayerHeight(val);
+     System.out.println("DEBUG: Layer height set to " + val);  
+    return "";
+}
+if (ctx.SET_EXTRUSION_MULTIPLIER() != null) {
+    double val = Double.parseDouble(ctx.NUMBER().getText());
+    settings.setExtrusionMultiplier(val);
+     System.out.println("DEBUG: Extrusion multiplier set to " + val);
+    return "";
+}
+
+if (ctx.ENABLE_AUTO_EXTRUDE() != null) {
+    double val = Double.parseDouble(ctx.NUMBER().getText());
+    autoExtrudeEnabled = (val != 0.0);
+     System.out.println("DEBUG: Auto-extrude enabled: " + autoExtrudeEnabled);
+    return "";
+}
+
+
+        // end
+        System.out.println("DEBUG: Unhandled statement: " + ctx.getText());
+        return "";
+
+
+
+    }
+
+/** 
+ * @param ctx
+ * @return String
+ */
+@Override
+public String visitRepeat_statement(JupitoreParser.Repeat_statementContext ctx) {
+    int times = Integer.parseInt(ctx.NUMBER().getText());
+    StringBuilder sb = new StringBuilder();
+
+    // repeat does not allow 'i' or functions
+    boolean oldInsideJrepeat = insideJrepeat;
+    insideJrepeat = false;
+
+    for (int iteration = 0; iteration < times; iteration++) {
+        for (JupitoreParser.StatementContext stmt : ctx.statement_block().statement()) {
+            // temporarily disable 'i' and function usage checks
+            sb.append(visit(stmt));
+        }
+    }
+
+    // restore previous state just in case
+    insideJrepeat = oldInsideJrepeat;
+
+    return sb.toString();
+}
+
+
+  // we want to nest iterators so im going to test a stack set up
+  protected Stack<Integer> iterationStack = new Stack<>();
+    //protected int currentIteration = 0; // current "i" for Jrepeat
+
+/** 
+ * @param ctx
+ * @return String
+ */
+@Override
+public String visitBrepeat_statement(JupitoreParser.Brepeat_statementContext ctx) {
+
+    int times = Integer.parseInt(ctx.NUMBER().getText());
+    StringBuilder sb = new StringBuilder();
+
+    // Save state
+    double oldCenterX = centerX;
+    double oldCenterY = centerY;
+    double oldX = currentX;
+    double oldY = currentY;
+
+    // Set Jrepeat center
+    centerX = currentX;
+    centerY = currentY;
+       // stack added 4/7/2026 to support nested Brepeats. 
+    for (int i = 0; i < times; i++) {
+
+       // currentIteration = i;
+       iterationStack.push(i);
+        insideJrepeat = true;
+
+        for (JupitoreParser.StatementContext stmt : ctx.statement_block().statement()) {
+
+            String stmtCode = visit(stmt);
+
+            if (stmtCode != null && !stmtCode.isBlank()) {
+                sb.append(stmtCode);
+            }
+        }
+        iterationStack.pop();
+    }
+
+    insideJrepeat = !iterationStack.isEmpty();
+ // fixed 4/6/2026
+    // Restore state
+    centerX = oldCenterX;
+    centerY = oldCenterY;
+    //currentX = oldX;
+   // currentY = oldY;
+    // do not restore current x and y in this case. so the tracker stays at the final position
+    return sb.toString();
+}
+    /** 
+     * @param ctx
+     * @return String
+     */
+    @Override
+    public String visitIf_statement(JupitoreParser.If_statementContext ctx) {
+        String condition = visit(ctx.condition());
+        StringBuilder sb = new StringBuilder();
+        sb.append("{% if ").append(condition).append(" %}\n");
+
+        for (JupitoreParser.StatementContext stmt : ctx.statement_block().statement()) {
+            String inner = visit(stmt);
+            if (inner != null && !inner.isBlank()) {
+                for (String line : inner.split("\n")) {
+                    if (!line.isBlank()) {
+                        sb.append("  ").append(line).append("\n");
+                    }
+                }
+            }
+        }
+
+        sb.append("{% endif %}\n");
+        return sb.toString();
+    }
+
+
+
+// Handle LAYER block
+public String visitLayer_statement(JupitoreParser.Layer_statementContext ctx) {
+    int layers = Integer.parseInt(ctx.NUMBER().getText());
+    LayerHandler layerHandler = new LayerHandler(this, settings);
+    return layerHandler.handleLayer(layers, ctx.statement_block());
+}
+
+    /** 
+     * @param ctx
+     * @return String
+     */
+    @Override
+    public String visitCondition(JupitoreParser.ConditionContext ctx) {
+        String target = ctx.TARGET().getText();
+        String op = ctx.COMPARE().getText();
+        String value = ctx.NUMBER().getText();
+
+        String sensor;
+
+        if (target.equals("extruder")) {
+            sensor = "printer.extruder.temperature";
+        } else if (target.equals("chamber")) {
+            sensor = "printer.heater_chamber.temperature";
+        } else {
+            sensor = "printer.heater_bed.temperature";
+        }
+
+        return sensor + " " + op + " " + value;
+    }
+
+    /** 
+     * @param ctx
+     * @return String
+     */
+@Override
+public String visitCoordList(JupitoreParser.CoordListContext ctx) {
+    // Reset temporary storage
+    targetX = Double.NaN;
+    targetY = Double.NaN;
+    targetZ = Double.NaN;
+    hasManualE = false;
+    manualEValue = 0.0;
+
+    // First pass: collect all coordinates
+    for (JupitoreParser.CoordContext coordCtx : ctx.coord()) {
+        visit(coordCtx);
+    }
+
+    // Build the output string
+    StringBuilder sb = new StringBuilder();
+    boolean isMove = false;
+    if (!Double.isNaN(targetX)) {
+        sb.append(" X").append(String.format("%.3f", targetX));
+        isMove = true;
+    }
+    if (!Double.isNaN(targetY)) {
+        sb.append(" Y").append(String.format("%.3f", targetY));
+        isMove = true;
+    }
+    if (!Double.isNaN(targetZ)) {
+        sb.append(" Z").append(String.format("%.3f", targetZ));
+        isMove = true;
+    }
+
+    // Decide about extrusion
+    if (hasManualE) {
+        sb.append(" E").append(String.format("%.3f", manualEValue));
+    } else if (autoExtrudeEnabled && isMove) {
+        // Auto‑extrude: compute distance from current position to target
+        double dx = Double.isNaN(targetX) ? 0 : targetX - currentX;
+        double dy = Double.isNaN(targetY) ? 0 : targetY - currentY;
+        double dz = Double.isNaN(targetZ) ? 0 : targetZ - currentZ;
+        double distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+        double autoE = settings.calculateExtrusion(distance);
+        sb.append(" E").append(String.format("%.3f", autoE));
+    }
+    // else: no extrusion (travel move)
+
+    // Update current position
+    if (!Double.isNaN(targetX)) currentX = targetX;
+    if (!Double.isNaN(targetY)) currentY = targetY;
+    if (!Double.isNaN(targetZ)) currentZ = targetZ;
+
+    return sb.toString().trim();
+}
+    protected boolean relativeMode = false;
+
+    protected double currentX = 0;
+    protected double currentY = 0;
+    protected double currentZ = 0;
+    protected boolean insideJrepeat = false;
+
+/** 
+ * @param ctx
+ * @return String
+ */
+@Override
+public String visitCoord(JupitoreParser.CoordContext ctx) {
+    String axis = ctx.X() != null ? "X" :
+                  ctx.Y() != null ? "Y" :
+                  ctx.Z() != null ? "Z" :
+                  ctx.E() != null ? "E" : "";
+
+    // Handle E axis separately
+    if (axis.equals("E")) {
+        if (ctx.expr() != null) {
+            // Manual extrusion value
+            String op = ctx.getChild(1).getText();
+            String exprText = ctx.expr().getText();
+            boolean isInLoop = !iterationStack.isEmpty();
+            if (!isInLoop && exprText.matches(".*\\bi\\b.*")) {
+                throw new RuntimeException("ERROR: 'i' iterator is only allowed inside Brepeat loops.");
+            }
+            int activeIteration = isInLoop ? iterationStack.peek() : 0;
+            Compute compute = new Compute(activeIteration);
+            double value = compute.visit(ctx.expr());
+            double finalE = value * settings.getExtrusionMultiplier();
+            hasManualE = true;
+            manualEValue = finalE;
+        }
+        // If there is no expression, we ignore (auto‑extrude will be handled later if enabled)
+        return "";
+    }
+
+    // For X, Y, Z axes
+    String op = ctx.getChild(1).getText();
+    String exprText = ctx.expr().getText();
+    boolean isInLoop = !iterationStack.isEmpty();
+    if (!isInLoop && exprText.matches(".*\\bi\\b.*")) {
+        throw new RuntimeException("ERROR: 'i' iterator is only allowed inside Brepeat loops.");
+    }
+    int activeIteration = isInLoop ? iterationStack.peek() : 0;
+    Compute compute = new Compute(activeIteration);
+    double value = compute.visit(ctx.expr());
+
+    double currentPos = getCurrent(axis);
+    double newPos;
+
+    if (relativeMode) {
+        // In relative mode, the expression gives the delta to add
+        double delta = value;
+        // Apply operation (though for relative, =, +=, -= are usually the same as delta)
+        switch (op) {
+            case "=":
+            case "+=":
+                delta = value;
+                break;
+            case "-=":
+                delta = -value;
+                break;
+            case "*=":
+            case "/=":
+                delta = value;
+                break;
+        }
+        newPos = currentPos + delta;
+    } else {
+        // Absolute mode: apply operation (e.g., +=, =, etc.) to current position
+        newPos = applyOp(currentPos, op, value);
+    }
+
+    // Store the target position (do NOT update currentX/Y/Z yet)
+    switch (axis) {
+        case "X": targetX = newPos; break;
+        case "Y": targetY = newPos; break;
+        case "Z": targetZ = newPos; break;
+    }
+    // After updating current position, check limits
+if (!Double.isNaN(targetX)) limiter.checkAndMove("X", targetX);
+if (!Double.isNaN(targetY)) limiter.checkAndMove("Y", targetY);
+if (!Double.isNaN(targetZ)) limiter.checkAndMove("Z", targetZ);
+    return "";
+}
+/** 
+ * @param axis
+ * @param delta
+ */
+// Relative helpers
+private void applyRelative(String axis, double delta) {
+    switch (axis) {
+        case "X": currentX += delta; break;
+        case "Y": currentY += delta; break;
+        case "Z": currentZ += delta; break;
+        case "E": break; // extrusion not tracked
+    }
+}
+
+/** 
+ * @param axis
+ * @return double
+ */
+private double getCurrent(String axis) {
+    switch (axis) {
+        case "X": return currentX;
+        case "Y": return currentY;
+        case "Z": return currentZ;
+        case "E": return 0;
+    }
+    return 0;
+}
+/** 
+ * @param ctx
+ * @return boolean
+ */
+// Recursive helper to detect math functions in an expression
+private boolean containsMathFunction(JupitoreParser.ExprContext ctx) {
+    if (ctx == null) return false;
+
+    // check children recursively
+    for (int i = 0; i < ctx.getChildCount(); i++) {
+        // if child is an expression, recurse
+        if (ctx.getChild(i) instanceof JupitoreParser.ExprContext) {
+            if (containsMathFunction((JupitoreParser.ExprContext) ctx.getChild(i))) {
+                return true;
+            }
+        } else {
+            // check if the text matches a math function
+            String text = ctx.getChild(i).getText();
+            if (text.matches("(?i)sin|cos|tan|sqrt")) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+  /** 
+   * @param current
+   * @param op
+   * @param value
+   * @return double
+   */
+  // Helper to apply the operation and update current position
+private double applyOp(double current, String op, double value) {
+    switch (op) {
+        case "=": return value;        // Set the value
+        case "+=": return current + value;
+        case "-=": return current - value;
+        case "*=": return current * value;
+        case "/=": return current / value;
+        default: throw new RuntimeException("Unsupported operation: " + op);
+    }
+}
+
+    /** 
+     * @return String
+     */
+    @Override
+    protected String defaultResult() {
+        return "";
+    }
+
+    /** 
+     * @param aggregate
+     * @param nextResult
+     * @return String
+     */
+    @Override
+    protected String aggregateResult(String aggregate, String nextResult) {
+        if (aggregate == null)
+            return nextResult;
+        if (nextResult == null)
+            return aggregate;
+        return aggregate + nextResult;
+    }
+
+
+    
+}
+

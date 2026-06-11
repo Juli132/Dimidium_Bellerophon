@@ -1,0 +1,292 @@
+body {
+    margin: 0;
+    font-family: "Orbitron", sans-serif;
+
+    /*  background: bold black, red, orange... kind of */
+    background-color: #0a0a0a;
+    background-image:
+        linear-gradient(110deg, #0a0a0a 0%, #c50000 25%, #ff6f3c 50%, #c50000 75%, #fffefe 45%),
+        linear-gradient(70deg, #0a0a0a 45%, #ff4500 20%, #b30000 50%, #ff6f3c 80%, #0a0a0a 100%),
+        radial-gradient(circle at center, rgba(255,140,0,0.1) 0%, transparent 70%);
+    
+    background-blend-mode: overlay;
+    color: #e0ffe5;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+
+.main-scontainer {
+    width: 100%;
+    max-width: none;
+    margin: 0 auto;
+    padding: 30px 20px;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+h1, h2, h3, h4 {
+    color: #d6e7ddd7;
+    text-shadow: 0 0 10px rgba(75, 69, 17, 0.5);
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
+
+h3 {
+    font-size: 1.5em;
+    color: #e0ffe5;
+    margin-top: 35px;
+    margin-bottom: 15px;
+    padding-left: 10px;
+    border-left: 2px solid rgba(84,128,48,0.5);
+}
+
+
+#token-list {
+
+color:antiquewhite;
+
+
+}
+
+
+.menu-grid {
+    display: none; /* Hide the old menu grid */
+}
+
+
+
+a {
+    color: #6affa380;
+    text-decoration: none;
+    border-bottom: 1px dotted #6affa380;
+    transition: all 0.3s ease;
+    padding: 0 2px;
+    border:1px solid rgba(52, 73, 39, 0.712); 
+}
+
+a:hover {
+    color: #e0ffe5;
+    border-bottom: 1px solid #6affa380;
+    text-shadow: 0 0 10px rgba(106,255,163,0.5);
+    background: rgba(106,255,163,0.1);
+     
+}
+
+/* Added this CSS */
+
+.grammar-section {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    box-sizing: border-box;
+    min-height: 100vh;
+}
+
+#grammar-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.grammar-category {
+    background: rgba(187, 197, 192, 0.103);
+    border: 1px solid rgba(84, 128, 48, 0.3);
+    border-radius: 8px;
+    padding: 25px;
+    backdrop-filter: blur(35px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+}
+
+.grammar-category:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 20px rgba(106, 255, 163, 0.2);
+    border-color: rgba(106, 255, 163, 0.5);
+}
+
+.grammar-category h4 {
+    color: #6affa3;
+    margin-top: 0;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(106, 255, 163, 0.3);
+    font-size: 1.2em;
+    text-shadow: 0 0 8px rgba(106, 255, 163, 0.4);
+}
+
+.grammar-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 12px 15px;
+    margin-bottom: 10px;
+    background: rgba(10, 20, 15, 0.5);
+    border: 1px solid rgba(84, 128, 48, 0.2);
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    color: antiquewhite;
+    gap: 12px;
+}
+.grammar-item {
+    align-items: center;
+}
+.grammar-item:hover {
+    background: rgba(106, 255, 163, 0.1);
+    border-color: rgba(106, 255, 163, 0.4);
+    transform: translateX(5px);
+}
+
+.grammar-item span {
+    color: #ffcc80;
+    font-family: monospace;
+    font-size: 0.85em;
+    margin-left: 10px;
+    flex: 1;
+    word-break: break-word;
+}
+
+.add-btn {
+    background: rgba(106, 255, 163, 0.2);
+    border: 1px solid rgba(106, 255, 163, 0.5);
+    color: #e0ffe5;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-weight: bold;
+    margin-left: 15px;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    user-select: none; /* Prevents text selection when clicking */
+}
+
+.add-btn:hover {
+    background: rgba(106, 255, 163, 0.4);
+    transform: scale(1.1);
+    box-shadow: 0 0 10px rgba(106, 255, 163, 0.5);
+}
+
+/* Click/active effect */
+.add-btn:active {
+    background: rgba(106, 255, 163, 0.6);
+    transform: scale(0.95);
+    box-shadow: 0 0 15px rgba(106, 255, 163, 0.8), 
+                inset 0 0 5px rgba(0, 0, 0, 0.3);
+    color: #0a0a0a; 
+    border-color: rgba(255, 255, 255, 0.8);
+}
+
+
+.add-btn::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(106, 255, 163, 0.3);
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.3s ease;
+}
+
+.add-btn:active::after {
+    animation: ripple 0.4s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+
+
+
+.main-scontainer {
+    display: none;
+}
+
+/* Update h3 styling for grammar section */
+.grammar-section h3 {
+    font-size: 2em;
+    color: #6affa3;
+    text-align: center;
+    margin-bottom: 40px;
+    text-shadow: 0 0 15px rgba(106, 255, 163, 0.5);
+    border-left: none;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.grammar-section h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #6affa3, transparent);
+}
+
+
+.top-logo {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+}
+
+.logo-link {
+    text-decoration: none;
+    display: inline-block;
+}
+
+.logo-box {
+  
+    letter-spacing: 1px;
+    
+     text-decoration: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    color: #effcfc;
+    background-color: #010301;
+    box-shadow: 0 0 8px #0b0f0e;
+    transition: all 0.2s ease-in-out;
+}
+
+.logo-box:hover {
+    background: rgba(10, 20, 15, 0.9);
+    background-color: #6affa380;
+    color: #000;
+    box-shadow: 0 0 12px #6affa380;
+}
+
+
+
+
+/* Adjusted the  grammar section to account for the top logo */
+.grammar-section {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 80px 20px 30px; /* Extra top padding for the logo! yippee */
+    box-sizing: border-box;
+    min-height: 100vh;
+}
+

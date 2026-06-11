@@ -1,0 +1,46 @@
+    <!--this code is for the dashboard page, 
+    which is where users can access their printer's mainsail interface directly from the hub.
+    it takes an IP address as a query parameter and loads the mainsail interface in an iframe. 
+    it also includes a sidebar with a button to access config files, which is handled by another script. 
+    This allows users to manage their printer settings without leaving the hub--> 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dimidium + Mainsail</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/hub.css"> 
+   
+
+</head>
+<body>
+
+<div id="sidebar">
+    <div id="sidebar-container">
+        <a href="hub.html" class="backtom">hub</a>
+        <button id="open-folder-btn">Config Files</button>
+    </div>
+</div>
+
+<div id="mainsail-window">
+    <iframe id="printer-frame" src="about:blank"></iframe>
+</div>
+
+<script>
+    // DASHBOARD LOGIC
+    const params = new URLSearchParams(window.location.search);
+    const printerIp = params.get('ip');
+    const frame = document.getElementById('printer-frame');
+
+    if (printerIp) {
+        // If the user didn't include http, add it automatically
+        const formattedIp = printerIp.startsWith('http') ? printerIp : `http://${printerIp}`;
+        frame.src = formattedIp;
+    } else {
+        alert("No printer IP found!");
+        window.location.href = 'hub.html';
+    }
+</script>
+ <script src="/scripts/hubfolder.js"></script>
+</body>
+</html>
