@@ -1,0 +1,139 @@
+<!-- our main IDE. do not modify-->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bellerophon IDE | Macro Compiler</title>
+    <link rel="stylesheet" href="/styles/starter.css" />
+  </head>
+  <body>
+    <div id="jupitore-app">
+      <aside class="sidebar">
+        <div class="brand">
+          <a href="index.html">
+            <div class="logo-box">Bellerophon</div>
+          </a>
+        </div>
+  <a href="library.html" class="sidebar-btn">References</a>
+       <button id="profileBtn" class="sidebar-btn">Printer Profile</button>
+
+        <div class="library-section">
+          <h3>add References</h3>
+          <div id="saved-references"></div>
+        </div>
+        
+      </aside>
+
+      <main class="workspace">
+        <header class="toolbar">
+          <button class="run-btn" id="compile-btn">RUN COMPILER</button>
+          <button class="clear-btn" id="clear-btn">CLEAR</button>
+          <!---WE ADDED THIS. marking so its easier to find and delete-->
+          <!--update: its working well so itll stay-->
+          <div class="mode-selector">
+            <button id="klipper-mode-btn" class="mode-option active">
+              Klipper
+            </button>
+            <button id="marlin-mode-btn" class="mode-option">Marlin</button>
+          </div>
+          <!------------------------------------------------------------>
+
+          <span class="file-name-wrapper">
+            <span
+              id="file-name-editable"
+              contenteditable="true"
+              spellcheck="false"
+            ></span>
+            <label for="file-name-editable" class="file-label"></label>
+            <span class="file-ext">.bph</span>
+          </span>
+        </header>
+
+        <div class="editor-split">
+          <section class="pane">
+            <div class="pane-label">Bellerophon Source (.bph)</div>
+            <div class="editor-container">
+              <div id="line-numbers">1</div>
+              <div id="code-overlay" class="code-overlay"></div>
+              <textarea id="code-input" spellcheck="false"> </textarea>
+            </div>
+          </section>
+
+          <section class="pane">
+            <div class="pane-label">.CFG / .GCODE</div>
+            <div class="output-view" id="gcode-output"></div>
+          </section>
+        </div>
+
+        <footer class="console">
+          <div class="console-header">
+            <span class="console-title">
+              Exceptions / Build Log
+              <button id="clear-log-btn" title="Clear log">✕</button>
+            </span>
+            <button id="download-cfg-btn" class="download-btn">
+              Download .cfg
+            </button>
+            <button id="download-jup-btn" class="download-btn">
+              Download .bph
+            </button>
+            <button id="load-jup-btn" class="download-btn">Load .bph</button>
+            <input
+              type="file"
+              id="load-jup-input"
+              accept=".bph"
+              style="display: none"
+            />
+          </div>
+          <div id="console-log">
+            <div class="log-entry system">> Bellerophon Engine ready...</div>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+  <script src="/scripts/colorhandling.js"></script>
+    <script src="/scripts/mscript.js"></script>
+    <script src="/scripts/errorHandler.js"></script>
+    <script src="/scripts/console-resize.js"></script>
+
+    <!-- Profile Modal -->
+<div id="profileModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Printer Profile</h2>
+        <div class="modal-form">
+            <label>Profile Name:</label>
+            <input type="text" id="profileName" value="Default">
+
+            <label>Bed Width (X, mm):</label>
+            <input type="number" id="profileMaxX" value="220" step="1">
+
+            <label>Bed Depth (Y, mm):</label>
+            <input type="number" id="profileMaxY" value="220" step="1">
+
+            <label>Max Height (Z, mm):</label>
+            <input type="number" id="profileMaxZ" value="250" step="1">
+
+            <label>Nozzle Diameter (mm):</label>
+            <input type="number" id="profileNozzle" value="0.4" step="0.05">
+
+            <label>Filament Diameter (mm):</label>
+            <input type="number" id="profileFilament" value="1.75" step="0.05">
+
+            <label>Layer Height (mm):</label>
+            <input type="number" id="profileLayerHeight" value="0.2" step="0.05">
+
+            <label>Extrusion Multiplier:</label>
+            <input type="number" id="profileExtrusionMultiplier" value="1.0" step="0.1">
+
+            <div class="modal-buttons">
+                <button id="saveProfileBtn">Save Profile</button>
+                <button id="cancelProfileBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+  </body>
+</html>

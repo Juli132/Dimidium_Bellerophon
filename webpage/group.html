@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dimidium Gravity Hub - Printers</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles/group.css">
+</head>
+<body>
+
+<h1 id="group-title">Loading...</h1>
+
+<div id="printer-dashboard">
+    </div>
+
+<div id="sidebar">
+    <div id="sidebar-container">
+        <a href="hub.html" class="backtom">hub</a>
+        <button id="add-printer-btn">Add Printer</button>
+    </div>
+</div>
+
+<div id="printer-modal" class="modal">
+    <div class="modal-content">
+        <h2>Add Printer</h2>
+        
+        <label>Machine Type</label>
+        <input type="text" id="display-machine-type" readonly style="color: #6affa3; border: none; background: transparent; text-align: center;">
+
+        <input type="text" id="printer-name-input" placeholder="Printer Name (e.g. Ender 5 Pro)">
+        <input type="text" id="printer-ip-input" placeholder="IP Address or HTTPS URL">
+        
+        <div class="modal-buttons">
+            <button id="save-printer-btn">Add</button>
+            <button id="close-printer-modal">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script src="/scripts/group.js"></script>
+</body>
+</html>
