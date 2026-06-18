@@ -17,6 +17,19 @@ Gravity Hub (Beta): A dynamic fleet deployment layer for managing and syncing co
 Note: The server runs locally on port 4567. No internet connection required after installation.
 
 ---
+## What This Means for You
+Write Once, Deploy Anywhere: Stop managing separate macro formats for every printer in your fleet. Whether you are running an aging Marlin-based cartesian printer or a high-speed Klipper-powered machine, your Bellerophon code remains identical. You handle the logic; we handle the firmware compatibility.
+
+Safety-First Manufacturing: The integrated Boundary Checker simulates your macros against your specific hardware dimensions before you ever press "print," turning catastrophic crashes into simple warnings.
+
+Parametric Power: Move beyond static, hardcoded G-code. Use math, variables, and iterative loops to create complex geometry that is impossible to maintain by hand.
+
+100% Local Control: All local network functionality is and will remain free.
+
+
+
+
+
 
 ## Program Structure
 
