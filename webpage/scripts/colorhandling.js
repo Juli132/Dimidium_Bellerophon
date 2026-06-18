@@ -104,7 +104,7 @@ if (t.name === "ID") {
     }
     const nextChar = codeInput[nextIndex] || '';
     if (nextChar === '=') {
-        color = "#dd9919"; // assignment target
+        color = "#9cdcfe"; // assignment target
     } else {
        
         let prevIndex = t.start - 1;
@@ -114,7 +114,7 @@ if (t.name === "ID") {
         const prevChar = codeInput[prevIndex] || '';
         
         if (['=', '+', '-', '*', '/', '(', ','].includes(prevChar)) {
-            color = "#dd9919";
+            color = "#9cdcfe";
         } else {
           
             color = tokenColors.ID || "#abb2bf";
