@@ -13,6 +13,7 @@ Bellerophon IDE: A real-time syntax-validating editor for authoring multi-firmwa
 CFG Generator & Boundary Checker: A visual configuration app that validates hardware pins and simulates G-code paths to prevent physical bed crashes.
 
 Gravity Hub (Beta): A dynamic fleet deployment layer for managing and syncing compiled scripts across local network printers.
+
 Note: The server runs locally on port 4567. No internet connection required after installation.
 
 ---
