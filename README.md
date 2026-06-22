@@ -21,11 +21,3 @@ Gravity Hub (Beta): A dynamic fleet deployment layer for managing and syncing co
 ## Full documentation
 See [Official_Bellerophon Language _ Documentation.pdf](https://github.com/Juli132/Dimidium_Bellerophon/blob/05cd10f3a161eebd50cf3e2cab236c9d0c7ba68c/Bellerophon%20Language%20_%20Documentation.pdf)
  for the complete command reference, examples, and limitations.
----
-## License
-Dimidium is free for personal, educational, and non-commercial use! You are completely free to download, modify, and share this software.
-
-Commercial use is strictly prohibited without explicit permission. If you are a company or individual wanting to use Dimidium for commercial purposes, please contact me directly at dislaofficialt@gmail.com  to discuss a commercial license.
-
-Disclaimer:
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
