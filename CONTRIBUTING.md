@@ -1,5 +1,19 @@
 # CONTRIBUTING to the Dimidium Ecosystem
 
+## Contributor License Agreement (Required)
+
+By contributing to this repository, you agree to the Dimidium Contributor License Agreement (CLA).
+
+The CLA grants permission for your contributions to be used in both:
+- the open-source Bellerophon project (Apache 2.0)
+- proprietary and commercial components of the Dimidium Ecosystem
+
+This CLA does not transfer ownership of your contribution.
+
+See [`CLA.md`](./CLA.md) for full terms.
+
+If you do not agree, please do not submit a pull request.
+
 ## Project Context
 
 Dimidium is a self-contained ecosystem for additive manufacturing tooling. It includes:
@@ -169,6 +183,7 @@ When filing a bug, include:
 - Reference the issue number with `Fixes #NN` or `Refs #NN`.
 - Add examples or regression coverage when practical.
 - Document API or behavior changes in the frontend docs if needed.
+- By submitting a PR, you confirm you have agreed to the CLA.
 
 ### Updating Documentation
 
