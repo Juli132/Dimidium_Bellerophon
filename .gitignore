@@ -21,7 +21,9 @@ Thumbs.db
 
 *.jar
 jre/
-lib/bin/ 
+lib/
+bin/ 
  
 dependency-reduced-pom.xml
 
+grammar/**/.antlr/
