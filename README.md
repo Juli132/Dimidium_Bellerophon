@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://github.com/Juli132/Dimidium_Bellerophon/">
-    <img src="https://github.com/user-attachments/assets/4a7732fe-02cb-4732-989d-df65d4456197" width="350" alt="Dimidium Logo">
+<img width="1920" height="1080" alt="2026-06-2420-34-26-ezgif com-video-to-webp-converter (3)" src="https://github.com/user-attachments/assets/6cb20cba-4e02-424d-868e-42ac8e93560f" />
   </a>
 </div>
 <p align="center">
