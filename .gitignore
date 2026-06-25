@@ -14,3 +14,7 @@ bin/
 # OS Generated Files
 Thumbs.db
 .DS_Store
+
+
+*.jar
+jre/
