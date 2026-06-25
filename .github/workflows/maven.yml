@@ -28,8 +28,8 @@ jobs:
         distribution: 'temurin'
         cache: maven
         
-    - name: Compile with Maven (no JAR)
-      run: mvn -B clean compile --file pom.xml
+    - name: Compile and Run Tests
+      run: mvn -B clean test --file pom.xml
 
     # Optional: Uploads the full dependency graph to GitHub for security alerts
    
