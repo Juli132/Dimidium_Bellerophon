@@ -1,7 +1,8 @@
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/4a7732fe-02cb-4732-989d-df65d4456197" width="350" alt="Dimidium Logo">
+  <a href="https://github.com/Juli132/Dimidium_Bellerophon/">
+    <img src="https://github.com/user-attachments/assets/4a7732fe-02cb-4732-989d-df65d4456197" width="350" alt="Dimidium Logo">
+  </a>
 </div>
-
 <p align="center">
   <!-- Row 1: Project Identity -->
   <a href="Bellerophon%20Language%20_%20Documentation.pdf"><img src="https://img.shields.io/badge/Bellerophon-DSL-black?labelColor=0d9488&style=flat" alt="Bellerophon: DSL"></a>
