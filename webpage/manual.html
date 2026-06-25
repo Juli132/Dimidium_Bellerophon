@@ -453,10 +453,11 @@
     </div>
 
     <h3>3. Procedural Layering (<span class="inline-code token-LAYER">Layer</span>)</h3>
-    <p>The <span class="inline-code token-LAYER">Layer</span> command automates vertical iteration. It not only repeats your macro block, but it also automatically injects a Z-hop (G91 move) between layers using your defined <code>LayerHeight</code>.</p>
+    <p>The <span class="inline-code token-LAYER">Layer</span> command automates vertical iteration. The Layer command executes a block once per printed layer and automatically advances the Z-axis using the configured <code>LayerHeight</code>.</p>
     <div class="code-block">
 <span class="line"><span class="token-LAYER">Layer</span> <span class="token-NUMBER">50</span></span>
-<span class="lines">    <span class="token-MOVEEX">MoveTo</span> <span class="token-X">x</span>=<span class="token-ID">i</span>*2 <span class="token-Y">y</span>=50</span>
+<span class="lines">    <span class="token-MOVEEX">MoveTo</span> <span class="token-X">x</span>=100 <span class="token-Y">y</span>=50</span>
+<span class="lines">    <span class="token-MOVEEX">MoveTo</span> <span class="token-X">x</span>=120 <span class="token-Y">y</span>=50</span>
 <span class="line"><span class="token-END">end</span></span>
     </div>
     <p>This is the engine behind "vase mode" style procedural printing, allowing you to build up volume automatically without manually managing Z-heights.</p>

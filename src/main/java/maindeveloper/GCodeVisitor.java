@@ -33,6 +33,7 @@ private double manualEValue = 0.0;
 private boolean hasAutoE = false;   // user wrote "E" without value
 protected double centerX = 0; // <-- Jrepeat center for X
 protected double centerY = 0; // <-- Jrepeat center for Y
+protected boolean insideLayer = false;
 // Hardware safety limiter: enforces axis bounds at compile time.
 protected HardwareLimiter limiter;
 public void setEnablePaging(boolean enable) {
@@ -428,8 +429,10 @@ if (ctx.ENABLE_AUTO_EXTRUDE() != null) {
      System.out.println("DEBUG: Auto-extrude enabled: " + autoExtrudeEnabled);
     return "";
 }
-
-
+// added 6/24/26
+if (ctx.layer_statement() != null) {
+    return visit(ctx.layer_statement());
+}
 
 //-------------------------------------------
 
@@ -548,6 +551,7 @@ public String visitBrepeat_statement(JupitoreParser.Brepeat_statementContext ctx
 
 
 // Handle LAYER block
+@Override
 public String visitLayer_statement(JupitoreParser.Layer_statementContext ctx) {
     int layers = Integer.parseInt(ctx.NUMBER().getText());
     LayerHandler layerHandler = new LayerHandler(this, settings);
@@ -650,6 +654,12 @@ public String visitCoord(JupitoreParser.CoordContext ctx) {
                   ctx.Z() != null ? "Z" :
                   ctx.E() != null ? "E" : "";
 
+          if (insideLayer && axis.equals("Z")) {
+        throw new RuntimeException(
+            "ERROR: Z-axis movement is not allowed inside Layer blocks. " +
+            "Layer automatically manages Z-height."
+        );
+    }         
     // Handle E axis separately
     if (axis.equals("E")) {
         if (ctx.expr() != null) {
