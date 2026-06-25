@@ -4,27 +4,26 @@ on:
   release:
     types: [created]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    permissions:
-      contents: write
-      pull-requests: read
 
     steps:
     - uses: actions/checkout@v4
-    
+
     - name: Set up JDK 19
       uses: actions/setup-java@v4
       with:
         java-version: '19'
         distribution: 'temurin'
         cache: maven
-        
+
     - name: Build the JAR with Maven
       run: mvn -B clean package --file pom.xml
-      
+
     - name: Create custom JRE with jlink
       run: |
         jlink --module-path $JAVA_HOME/jmods \
@@ -33,23 +32,22 @@ jobs:
               --compress=2 \
               --no-header-files \
               --no-man-pages
-      
+
     - name: Prepare Release Package
       run: |
         mkdir release-package
-        cp target/SyntaxN.jar release-package/
+        cp target/*.jar release-package/
         cp run.bat release-package/
         cp run.sh release-package/
         cp -r webpage release-package/
-        cp -r custom-jre release-package/jre   
-        
-    - name: Create Versioned ZIP Archive
+        cp -r custom-jre release-package/jre
+
+    - name: Create ZIP
       run: |
         cd release-package
-        zip -r ../SyntaxN-${{ github.ref_name }}.zip .
-        
-    - name: Upload to Release
+        zip -r ../Dimidium-${{ github.ref_name }}.zip .
+
+    - name: Upload Release Asset
       uses: softprops/action-gh-release@v2
       with:
-        files: |
-          ./SyntaxN-${{ github.ref_name }}.zip
+        files: Dimidium-${{ github.ref_name }}.zip
