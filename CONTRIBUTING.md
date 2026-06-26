@@ -127,6 +127,31 @@ If you are looking for a place to jump in, here are the active development miles
       </ul>
     </td>
   </tr>
+  <tr>
+    <td valign="top" width="50%">
+      <h3>5. UI/UX & Ecosystem Polish</h3>
+      <p><b>Goal:</b> Elevate the visual experience, accessibility, and consistency across the entire Dimidium Ecosystem.</p>
+      <ul>
+        <li><b>Design Unification:</b> Establish a shared visual language (colors, spacing, component behavior) that applies to Bellerophon, the CFG Generator, and Gravity Hub.</li>
+        <li><b>Theming & Engine Robustness:</b> Improve the modularity of the theme-loading system to ensure it works seamlessly across all web-based tools in the ecosystem.</li>
+        <li><b>CSS Scoping & Cleanup:</b> Eliminate visual inconsistencies by properly scoping styles and removing redundant code across <code>starter.css</code>, <code>dark.css</code>, and tool-specific stylesheets.</li>
+        <li><b>Documentation Polish:</b> Update <code>manual.html</code> and other project docs to reflect our current UI/UX, ensuring that tutorials and guides are visually aligned with the software.</li>
+        <li><b>Accessibility & Clarity:</b> Standardize hover states, contrast ratios, and layout patterns to make the ecosystem easier to navigate, regardless of the printer hardware or network environment.</li>
+      </ul>
+    </td>
+    <td valign="top" width="50%">
+      <h3>Why This Matters</h3>
+      <p>We make the ecosystem more professional, more maintainable, and significantly easier to use. A polished UI builds trust with users while comprehensive documentation reduces support burden and lowers the barrier to entry for new contributors and users alike.</p>
+      <br>
+      <p><b>Key Deliverables:</b></p>
+      <ul>
+        <li>Unified CSS framework across all tools</li>
+        <li>Fully functional theming system (Light/Dark + extensible)</li>
+        <li>Updated <code>manual.html</code> with current UI</li>
+        <li>User-friendly onboarding elements</li>
+      </ul>
+    </td>
+  </tr>
 </table>
 
 ---
