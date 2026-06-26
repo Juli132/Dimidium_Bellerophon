@@ -6,7 +6,7 @@
 <p align="center">
   <!-- Row 1: Project Identity -->
   <a href="Bellerophon%20Language%20_%20Documentation.pdf"><img src="https://img.shields.io/badge/Bellerophon-DSL-black?labelColor=0d9488&style=flat" alt="Bellerophon: DSL"></a>
-  <a href="README.md#gravityhub"><img src="https://img.shields.io/badge/GravityHub-Beta-black?labelColor=0d9488&style=flat" alt="Gravity Hub: Beta"></a>
+  <a href="https://github.com/Juli132/Dimidium_Bellerophon"><img src="https://img.shields.io/badge/GravityHub-Beta-black?labelColor=0d9488&style=flat" alt="Gravity Hub: Beta"></a>
   <br>
 
   <!-- Row 2: Firmware Support -->
