@@ -73,6 +73,24 @@ Here are the best ways to jump in:
   </tr>
 </table>
 
+## 🎨 Theme Contributions
+Bellerophon uses a data-driven theming system. Adding a new theme is modular and does not require modifying core layout logic.
+
+### Steps to add a theme:
+1. **Create your stylesheet:** Create a new file in `/styles/themes/` (e.g., `forest.css`). 
+   * **Important:** All your theme-specific styles must be scoped to your unique body class. For example:
+     ```css
+     body.theme-forest {
+         background-color: #0f1a0f;
+         ...
+     }
+     ```
+2. **Register the theme:** Open `/scripts/themes.js`. Add a new entry to the `window.THEME_MAP` object, including the `label`, the `css` path, and a `preview` hex code for the settings modal.
+3. **Submit:** Include a screenshot of your theme in your PR so we can verify the syntax highlighting and contrast.
+
+> **⚠️ The Golden Rule:** Do **not** modify `starter.css` or the core layout files. We want to keep the base structure consistent for everyone. One theme per Pull Request, please!
+
+
 ## 🗺️ Current Milestones & Where to Contribute
 
 If you are looking for a place to jump in, here are the active development milestones we are currently focusing on. Feel free to open a PR for any of these focus areas:
