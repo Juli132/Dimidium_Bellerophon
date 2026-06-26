@@ -1,6 +1,6 @@
 const PI_HOST = "something.local"; 
-const API_URL = `http://${PI_HOST}:7125/api/printer/command`;
-const STATUS_URL = `http://${PI_HOST}:7125/printer/objects/query?query=toolhead`;
+//const API_URL = `http://${PI_HOST}:7125/api/printer/command`;
+//const STATUS_URL = `http://${PI_HOST}:7125/printer/objects/query?query=toolhead`;
 
 function setButtonActive(btn) {
     btn.style.backgroundColor = "var(--accent-green)";
