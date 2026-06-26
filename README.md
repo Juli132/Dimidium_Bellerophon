@@ -20,7 +20,9 @@
   <br>
 
   <!-- Row 3: Environment & License -->
-  <img src="https://img.shields.io/badge/OS-Windows%20|%20Linux%20|%20macOS-black?labelColor=0078D4&style=flat" alt="Platform" style="pointer-events: none;">
+<a href="https://github.com/Juli132/Dimidium_Bellerophon">
+  <img src="https://img.shields.io/badge/OS-Windows%20|%20Linux%20|%20macOS-black?labelColor=0078D4&style=flat" alt="Platform">
+</a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License"></a>
 </p>
 
