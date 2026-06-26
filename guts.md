@@ -4,6 +4,8 @@ This document is a companion to [`CONTRIBUTING.md`](./CONTRIBUTING.md). It provi
 
 If you just want to get started quickly, see the main contributing guide. If you are planning to modify the parser, add a new firmware adapter, or understand the full stack, read on.
 
+Files are always being moved around! if some files are out of place, help us document properly! 
+
 ### Bellerophon Compiler Engine (Backend)
 
 > *Note: The core parsing engine, ANTLR grammar, and generated syntax tree files currently use the legacy project name `Jupitore`. These operate as the core engine for the Bellerophon compiler.*
