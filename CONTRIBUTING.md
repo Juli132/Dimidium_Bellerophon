@@ -4,7 +4,8 @@
 Thank you for your interest in contributing! Whether you're a first‑time open source contributor or a seasoned developer, we welcome your help. This guide gives you the essentials to get started.
 
 - For a **high‑level overview** and contribution ideas, read on.
-- For **deep technical details** (file‑by‑file breakdown, adapter architecture, etc.), see [`guts.md`](./guts.md).
+- For **technical details** of the backend see [`guts.md`](./guts.md).
+- For **technical details** of the frontend see [`frontend_reference.md`](frontend_reference.md). This is more friendly and less complex for contributors that want to get started. 
 
   
 ## Contributor License Agreement (Required)
