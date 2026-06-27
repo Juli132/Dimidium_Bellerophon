@@ -34,7 +34,7 @@ This repository combines parser/compiler backend logic, firmware adapter archite
 
 ### Local Development
 
-> **Prerequisite:** This source code requires **Java 19** (JDK) to compile and run. The release versions bundle their own JRE, but source-code development relies on your local Java installation. We have the bundle in the v0.1.0-dev-kit for your convenience.
+> **Prerequisite:** This source code requires **Java 19** (JDK) to compile and run. The release versions bundle their own JRE, but source-code development relies on your local Java installation. We have the bundle in the [dev-kit-0.1.0](https://github.com/Juli132/Dimidium_Bellerophon/releases/tag/dev-kit-0.1.0) for your convenience.
 
 The `./run.sh` and `.\run.bat` scripts are intended only for the packaged release version and will not work with the source tree unless you have the JRE bundle from the dev kit and generated the .jar. You must generate a .jar via `./mvnw clean package`  # PowerShell / Mac / Linux or `.\mvnw.cmd clean package`  # Command Prompt (cmd) and move it to the root folder. 
 Otherwise, you may also run directly from the file as long as you have **Java 19**: 
