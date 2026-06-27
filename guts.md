@@ -2,7 +2,7 @@
 
 This document is a companion to [`CONTRIBUTING.md`](./CONTRIBUTING.md). It provides a **file‑by‑file breakdown** and detailed architecture notes for the Bellerophon Engine.
 
-If you are planning to modify the parser, compiler core, or firmware adapters, read on. For general contribution guidelines, see the main contributing guide. For a File-by-File for the frontend, check out [`getting_started.md`](./getting_started.md)
+If you are planning to modify the parser, compiler core, or firmware adapters, read on. For general contribution guidelines, see the main contributing guide. For a File-by-File for the frontend, check out [`frontend_reference.md`](./frontend_reference.md)
 
 ---
 
