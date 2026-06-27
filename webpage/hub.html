@@ -1,42 +1,43 @@
 <!-- this page is responsible for managing the main hub interface-->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Dimidium Gravity Hub</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/hub.css">
-</head>
-<body>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles/hub.css" />
+  </head>
+  <body>
+    <h1 id="hub-title">Gravity Hub</h1>
 
-<h1 id="hub-title">Gravity Hub</h1>
+    <div id="hub-dashboard"></div>
 
-<div id="hub-dashboard">
-    </div>
-
-<div id="sidebar">
-    <div id="sidebar-container">
+    <div id="sidebar">
+      <div id="sidebar-container">
         <a href="index.html" class="backtom">Dimidium</a>
         <button id="add-group-btn">Add Group</button>
+      </div>
     </div>
-</div>
 
-<div id="group-modal" class="modal">
-    <div class="modal-content">
+    <div id="group-modal" class="modal">
+      <div class="modal-content">
         <h2 id="modal-title">Create New Group</h2>
-        <input type="text" id="group-name-input" placeholder="Group Name">
+        <input type="text" id="group-name-input" placeholder="Group Name" />
         <select id="group-type-input">
-            <option value="Klipper">Klipper</option>
-            <option value="Bambu">Bambu</option>
-            <option value="Prusa">Prusa</option>
-            <option value="Custom">Custom</option>
+          <option value="Klipper">Klipper</option>
+          <option value="Bambu">Bambu</option>
+          <option value="Prusa">Prusa</option>
+          <option value="Custom">Custom</option>
         </select>
         <div class="modal-buttons">
-            <button id="save-group-btn">Save</button>
-            <button id="close-modal-btn">Cancel</button>
+          <button id="save-group-btn">Save</button>
+          <button id="close-modal-btn">Cancel</button>
         </div>
+      </div>
     </div>
-</div>
-<script src="scripts/gravity_scripts/hub.js"></script>
-</body>
+    <script src="scripts/gravity_scripts/hub.js"></script>
+  </body>
 </html>

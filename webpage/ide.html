@@ -28,7 +28,7 @@
         <header class="toolbar">
           <button class="run-btn" id="compile-btn">RUN COMPILER</button>
           <button class="clear-btn" id="clear-btn">CLEAR</button>
-          
+
           <!---WE ADDED THIS. marking so its easier to find and delete-->
           <!--update: its working well so itll stay-->
           <div class="mode-selector">
@@ -51,8 +51,8 @@
             <span class="file-ext">.bph</span>
           </span>
 
-           <!--new addition for settings button to the far right-->
-           <button class="settings-btn" id="settings-btn">⚙️</button>
+          <!--new addition for settings button to the far right-->
+          <button class="settings-btn" id="settings-btn">⚙️</button>
         </header>
 
         <div class="editor-split">
@@ -97,7 +97,7 @@
         </footer>
       </main>
     </div>
-   <script src="/scripts/colors_scripts/themes.js"></script>
+    <script src="/scripts/colors_scripts/themes.js"></script>
     <script src="/scripts/colors_scripts/colorhandling.js"></script>
     <script src="/scripts/ide_scripts/firmware.js"></script>
     <script src="/scripts/ide_scripts/mscript.js"></script>
@@ -153,30 +153,30 @@
     </div>
 
     <!-- Settings Modal -->
-<div id="settingsModal" class="modal" style="display:none;">
-    <div class="modal-content settings-modal">
+    <div id="settingsModal" class="modal" style="display: none">
+      <div class="modal-content settings-modal">
         <span class="close-settings-modal">&times;</span>
         <h2>⚙️ Settings</h2>
-        
-      <div class="settings-section">
-    <h3>Themes</h3>
 
-    <div class="theme-selector" id="themeSelector"></div>
-
-    <p class="theme-description" id="themeDescription">
-        Current theme: —
-    </p>
-</div>
         <div class="settings-section">
-            <h3>Other Settings</h3>
-            <p class="settings-note">More settings coming soon...</p>
+          <h3>Themes</h3>
+
+          <div class="theme-selector" id="themeSelector"></div>
+
+          <p class="theme-description" id="themeDescription">
+            Current theme: —
+          </p>
+        </div>
+        <div class="settings-section">
+          <h3>Other Settings</h3>
+          <p class="settings-note">More settings coming soon...</p>
         </div>
 
         <div class="modal-buttons">
-            <button id="closeSettingsBtn">Close</button>
+          <button id="closeSettingsBtn">Close</button>
         </div>
+      </div>
     </div>
-</div>
-<script src="/scripts/settings_scripts/settings.js"></script>
+    <script src="/scripts/settings_scripts/settings.js"></script>
   </body>
 </html>

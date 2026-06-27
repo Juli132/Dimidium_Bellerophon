@@ -7,12 +7,12 @@ public class Compute extends JupitoreBaseVisitor<Double> {
     private int iteration;
     private GCodeVisitor visitor;
 
-   public Compute(GCodeVisitor visitor, int iteration) {
-    this.visitor = visitor;
-    this.iteration = iteration;
-}
+    public Compute(GCodeVisitor visitor, int iteration) {
+        this.visitor = visitor;
+        this.iteration = iteration;
+    }
 
-    /** 
+    /**
      * @param ctx
      * @return Double
      */
@@ -22,7 +22,7 @@ public class Compute extends JupitoreBaseVisitor<Double> {
         return Double.parseDouble(ctx.NUMBER().getText());
     }
 
-    /** 
+    /**
      * @param ctx
      * @return Double
      */
@@ -32,7 +32,7 @@ public class Compute extends JupitoreBaseVisitor<Double> {
         return (double) iteration;
     }
 
-    /** 
+    /**
      * @param ctx
      * @return Double
      */
@@ -42,7 +42,7 @@ public class Compute extends JupitoreBaseVisitor<Double> {
         return visit(ctx.expr());
     }
 
-  //NEW
+    // NEW
     @Override
     public Double visitPower(JupitoreParser.PowerContext ctx) {
         double base = visit(ctx.expr(0));
@@ -50,8 +50,7 @@ public class Compute extends JupitoreBaseVisitor<Double> {
         return Math.pow(base, exponent);
     }
 
-
-    /** 
+    /**
      * @param ctx
      * @return Double
      */
@@ -64,10 +63,10 @@ public class Compute extends JupitoreBaseVisitor<Double> {
         double left = visit(ctx.expr(0));
         double right = visit(ctx.expr(1));
 
-       return ctx.op.getText().equals("+") ? left + right : left - right;
+        return ctx.op.getText().equals("+") ? left + right : left - right;
     }
 
-    /** 
+    /**
      * @param ctx
      * @return Double
      */
@@ -75,17 +74,17 @@ public class Compute extends JupitoreBaseVisitor<Double> {
     // 4/3/2026: Operator dispatch via op.getText()
     @Override
     public Double visitMulDiv(JupitoreParser.MulDivContext ctx) {
-    Double left = visit(ctx.expr(0));
-    Double right = visit(ctx.expr(1));
-    System.out.println("MULDIV: left=" + left + ", right=" + right);
-    if (left == null || right == null) {
-        System.out.println("WARNING: left or right is null!");
-        return 0.0;
+        Double left = visit(ctx.expr(0));
+        Double right = visit(ctx.expr(1));
+        System.out.println("MULDIV: left=" + left + ", right=" + right);
+        if (left == null || right == null) {
+            System.out.println("WARNING: left or right is null!");
+            return 0.0;
+        }
+        return ctx.op.getText().equals("*") ? left * right : left / right;
     }
-    return ctx.op.getText().equals("*") ? left * right : left / right;
-}
 
-    /** 
+    /**
      * @param ctx
      * @return Double
      */
@@ -107,12 +106,12 @@ public class Compute extends JupitoreBaseVisitor<Double> {
 
             case "tan":
                 return Math.tan(Math.toRadians(value));
-      // added safety check for sqrt of negative number 6/19/26
-           case "sqrt":
-    if (value < 0) {
-        throw new RuntimeException("ERROR: Cannot calculate square root of a negative number: " + value);
-    }
-    return Math.sqrt(value);
+            // added safety check for sqrt of negative number 6/19/26
+            case "sqrt":
+                if (value < 0) {
+                    throw new RuntimeException("ERROR: Cannot calculate square root of a negative number: " + value);
+                }
+                return Math.sqrt(value);
             case "abs":
                 return Math.abs(value);
             case "sign":
@@ -122,20 +121,19 @@ public class Compute extends JupitoreBaseVisitor<Double> {
         }
     }
 
+    @Override
+    public Double visitVariable(JupitoreParser.VariableContext ctx) {
+        String varName = ctx.ID().getText();
+        // TODO: Currently a flat global scope. Will need a Stack<Map> if local function
+        // variables are added.
+        Double value = visitor.variables.getOrDefault(varName, 0.0);
+        System.out.println("READ VAR: " + varName + " = " + value);
+        return value;
+    }
 
-
- @Override
-public Double visitVariable(JupitoreParser.VariableContext ctx) {
-    String varName = ctx.ID().getText();
-    // TODO: Currently a flat global scope. Will need a Stack<Map> if local function variables are added.
-    Double value = visitor.variables.getOrDefault(varName, 0.0);
-    System.out.println("READ VAR: " + varName + " = " + value); 
-    return value;
-}
-
-@Override
-protected Double defaultResult() {
-    return 0.0;
-}
+    @Override
+    protected Double defaultResult() {
+        return 0.0;
+    }
 
 }

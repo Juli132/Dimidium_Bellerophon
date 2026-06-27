@@ -1,45 +1,87 @@
 const boards = {
   "skr-mini-e3-v3": {
     name: "SKR Mini E3 V3.0",
-    x_step: "PB13", x_dir: "!PB12", x_enable: "!PB14", x_endstop: "^PC0",
-    y_step: "PB10", y_dir: "!PB2", y_enable: "!PB11", y_endstop: "^PC1",
-    z_step: "PB0",  z_dir: "PC5",  z_enable: "!PB1",  z_endstop: "^PC2",
+    x_step: "PB13",
+    x_dir: "!PB12",
+    x_enable: "!PB14",
+    x_endstop: "^PC0",
+    y_step: "PB10",
+    y_dir: "!PB2",
+    y_enable: "!PB11",
+    y_endstop: "^PC1",
+    z_step: "PB0",
+    z_dir: "PC5",
+    z_enable: "!PB1",
+    z_endstop: "^PC2",
     uart_pin: "PC11",
     tx_pin: "PC10",
     has_uart_global: true,
-    needs_standby_pins: false
+    needs_standby_pins: false,
   },
   "skr-e3-turbo": {
     name: "SKR E3 Turbo",
-    x_step: "P1.4", x_dir: "P1.8", x_enable: "P1.0", x_endstop: "^P1.29",
-    y_step: "P1.14", y_dir: "P1.15", y_enable: "P1.9", y_endstop: "^P1.28",
-    z_step: "P4.29", z_dir: "P4.28", z_enable: "P1.16", z_endstop: "^P1.27",
-    e_step: "P2.11", e_dir: "P2.12", e_enable: "P0.21",
-    uart_pin_x: "P1.1", uart_addr_x: 0,
-    uart_pin_y: "P1.10", uart_addr_y: 1,
-    uart_pin_z: "P1.17", uart_addr_z: 2,
-    uart_pin_e: "P1.25", uart_addr_e: 4,
+    x_step: "P1.4",
+    x_dir: "P1.8",
+    x_enable: "P1.0",
+    x_endstop: "^P1.29",
+    y_step: "P1.14",
+    y_dir: "P1.15",
+    y_enable: "P1.9",
+    y_endstop: "^P1.28",
+    z_step: "P4.29",
+    z_dir: "P4.28",
+    z_enable: "P1.16",
+    z_endstop: "^P1.27",
+    e_step: "P2.11",
+    e_dir: "P2.12",
+    e_enable: "P0.21",
+    uart_pin_x: "P1.1",
+    uart_addr_x: 0,
+    uart_pin_y: "P1.10",
+    uart_addr_y: 1,
+    uart_pin_z: "P1.17",
+    uart_addr_z: 2,
+    uart_pin_e: "P1.25",
+    uart_addr_e: 4,
     needs_standby_pins: true,
-    standby_pins: "!P3.26, !P3.25, !P1.18, !P1.19, !P2.13"
+    standby_pins: "!P3.26, !P3.25, !P1.18, !P1.19, !P2.13",
   },
   "creality-4.2.2": {
     name: "Creality 4.2.2",
-    x_step: "PC2", x_dir: "PB9", x_enable: "!PC3", x_endstop: "^PA5",
-    y_step: "PB8", y_dir: "PB7", y_enable: "!PB6", y_endstop: "^PA6",
-    z_step: "PB6", z_dir: "!PB5", z_enable: "!PB4", z_endstop: "^PA7",
+    x_step: "PC2",
+    x_dir: "PB9",
+    x_enable: "!PC3",
+    x_endstop: "^PA5",
+    y_step: "PB8",
+    y_dir: "PB7",
+    y_enable: "!PB6",
+    y_endstop: "^PA6",
+    z_step: "PB6",
+    z_dir: "!PB5",
+    z_enable: "!PB4",
+    z_endstop: "^PA7",
     uart_pin_global: "PC11",
     has_uart_global: true,
-    needs_standby_pins: false   
+    needs_standby_pins: false,
   },
   "creality-4.2.7": {
     name: "Creality 4.2.7",
-    x_step: "PB9", x_dir: "PC2", x_enable: "!PC3", x_endstop: "^PA5",
-    y_step: "PB7", y_dir: "PB8", y_enable: "!PB6", y_endstop: "^PA6",
-    z_step: "PB5", z_dir: "!PB6", z_enable: "!PB4", z_endstop: "^PA7",
+    x_step: "PB9",
+    x_dir: "PC2",
+    x_enable: "!PC3",
+    x_endstop: "^PA5",
+    y_step: "PB7",
+    y_dir: "PB8",
+    y_enable: "!PB6",
+    y_endstop: "^PA6",
+    z_step: "PB5",
+    z_dir: "!PB6",
+    z_enable: "!PB4",
+    z_endstop: "^PA7",
     uart_pin_global: "PC11",
     has_uart_global: true,
-    needs_standby_pins: false
-  }
+    needs_standby_pins: false,
+  },
 };
 
 function generateConfig() {
@@ -160,7 +202,7 @@ function generateConfig() {
     const centerX = Math.floor(parseInt(bedX) / 2);
     const centerY = Math.floor(parseInt(bedY) / 2);
     cfg += `[safe_z_home]\nhome_xy_position: ${centerX},${centerY}\nspeed: 75\nz_hop: 10\nz_hop_speed: 5\n\n`;
-    cfg += `[bed_mesh]\nspeed: 150\nhorizontal_move_z: 5\nmesh_min: 30,30\nmesh_max: ${parseInt(bedX)-30},${parseInt(bedY)-30}\nprobe_count: 5,5\n\n`;
+    cfg += `[bed_mesh]\nspeed: 150\nhorizontal_move_z: 5\nmesh_min: 30,30\nmesh_max: ${parseInt(bedX) - 30},${parseInt(bedY) - 30}\nprobe_count: 5,5\n\n`;
   }
 
   cfg += `[board_pins]\naliases:\n    EXP1_1=PB5, EXP1_3=PA9, EXP1_5=PA10, EXP1_7=PB8, EXP1_9=<GND>,\n    EXP1_2=PA15, EXP1_4=<RST>, EXP1_6=PB9, EXP1_8=PD6, EXP1_10=<5V>\n\n`;
@@ -185,7 +227,7 @@ function saveSession() {
     bedY: document.getElementById("bedY").value,
     bedZ: document.getElementById("bedZ").value,
     mcuSerial: document.getElementById("mcuSerial").value,
-    outputCfg: document.getElementById("outputCfg").value
+    outputCfg: document.getElementById("outputCfg").value,
   };
   localStorage.setItem("dimidium_session", JSON.stringify(formData));
 }
@@ -201,8 +243,10 @@ function loadSession() {
     if (data.bedX) document.getElementById("bedX").value = data.bedX;
     if (data.bedY) document.getElementById("bedY").value = data.bedY;
     if (data.bedZ) document.getElementById("bedZ").value = data.bedZ;
-    if (data.mcuSerial) document.getElementById("mcuSerial").value = data.mcuSerial;
-    if (data.outputCfg) document.getElementById("outputCfg").value = data.outputCfg;
+    if (data.mcuSerial)
+      document.getElementById("mcuSerial").value = data.mcuSerial;
+    if (data.outputCfg)
+      document.getElementById("outputCfg").value = data.outputCfg;
     return true;
   } catch (e) {
     return false;
@@ -210,12 +254,14 @@ function loadSession() {
 }
 
 function attachAutoSave() {
-  ['board', 'driver', 'probe', 'bedX', 'bedY', 'bedZ', 'mcuSerial'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.addEventListener('input', saveSession);
-  });
+  ["board", "driver", "probe", "bedX", "bedY", "bedZ", "mcuSerial"].forEach(
+    (id) => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener("input", saveSession);
+    },
+  );
   const textarea = document.getElementById("outputCfg");
-  if (textarea) textarea.addEventListener('input', saveSession);
+  if (textarea) textarea.addEventListener("input", saveSession);
 }
 
 function handleGenerate() {
@@ -243,90 +289,98 @@ function handleDownload() {
 
 function handleClearConfig() {
   if (confirm("Clear the current config? This cannot be undone.")) {
-    document.getElementById("outputCfg").value = "\n# Generate a new config using the form above.";
+    document.getElementById("outputCfg").value =
+      "\n# Generate a new config using the form above.";
     saveSession();
   }
 }
 
 function handleClearUpload() {
-  if (confirm("Clear uploaded file? This will reset checker dimensions to generator defaults.")) {
+  if (
+    confirm(
+      "Clear uploaded file? This will reset checker dimensions to generator defaults.",
+    )
+  ) {
     const fileInput = document.getElementById("cfgUpload");
     fileInput.value = "";
-    
+
     const bedX = document.getElementById("bedX").value;
     const bedY = document.getElementById("bedY").value;
     const bedZ = document.getElementById("bedZ").value;
-    
+
     document.getElementById("checkerBedX").value = bedX;
     document.getElementById("checkerBedY").value = bedY;
     document.getElementById("checkerBedZ").value = bedZ;
-    
+
     const resultsDiv = document.getElementById("checkerResults");
     if (resultsDiv) {
-      resultsDiv.innerHTML = '<div class="checker-summary pass">Upload cleared. Using generator dimensions.</div>';
+      resultsDiv.innerHTML =
+        '<div class="checker-summary pass">Upload cleared. Using generator dimensions.</div>';
       setTimeout(() => {
-        if (resultsDiv.innerHTML === '<div class="checker-summary pass">Upload cleared. Using generator dimensions.</div>') {
-          resultsDiv.innerHTML = '';
+        if (
+          resultsDiv.innerHTML ===
+          '<div class="checker-summary pass">Upload cleared. Using generator dimensions.</div>'
+        ) {
+          resultsDiv.innerHTML = "";
         }
       }, 2000);
     }
   }
 }
 
-
-
-
-
-// BOUNDARY CHECKER FUNCTIONS BELOW. 
+// BOUNDARY CHECKER FUNCTIONS BELOW.
 // gonna create a line here
 //---------------------------------------------------------------------------------
-
 
 let syncEnabled = false;
 
 function toggleBoundaryChecker() {
-  const content = document.getElementById('checkerContent');
-  const icon = document.getElementById('checkerToggleIcon');
-  if (content.style.display === 'none') {
-    content.style.display = 'block';
-    icon.textContent = '▼';
+  const content = document.getElementById("checkerContent");
+  const icon = document.getElementById("checkerToggleIcon");
+  if (content.style.display === "none") {
+    content.style.display = "block";
+    icon.textContent = "▼";
   } else {
-    content.style.display = 'none';
-    icon.textContent = '➤';
+    content.style.display = "none";
+    icon.textContent = "➤";
   }
 }
 
 function toggleSync(button) {
   syncEnabled = !syncEnabled;
   if (syncEnabled) {
-    button.classList.add('active');
+    button.classList.add("active");
     syncFromGenerator();
   } else {
-    button.classList.remove('active');
+    button.classList.remove("active");
   }
 }
 
 function syncFromGenerator() {
   if (!syncEnabled) return;
-  
+
   const bedX = document.getElementById("bedX").value;
   const bedY = document.getElementById("bedY").value;
   const bedZ = document.getElementById("bedZ").value;
-  
+
   document.getElementById("checkerBedX").value = bedX;
   document.getElementById("checkerBedY").value = bedY;
   document.getElementById("checkerBedZ").value = bedZ;
-  
+
   const resultsDiv = document.getElementById("checkerResults");
   if (resultsDiv) {
-    resultsDiv.innerHTML = '<div class="checker-summary pass">Synced dimensions from generator</div>';
+    resultsDiv.innerHTML =
+      '<div class="checker-summary pass">Synced dimensions from generator</div>';
     setTimeout(() => {
-      if (resultsDiv.innerHTML === '<div class="checker-summary pass">Synced dimensions from generator</div>') {
-        resultsDiv.innerHTML = '';
+      if (
+        resultsDiv.innerHTML ===
+        '<div class="checker-summary pass">Synced dimensions from generator</div>'
+      ) {
+        resultsDiv.innerHTML = "";
       }
     }, 2000);
   }
-  
+
   const macroInput = document.getElementById("macroInput");
   if (macroInput && macroInput.value.trim()) {
     runBoundaryCheck();
@@ -335,24 +389,24 @@ function syncFromGenerator() {
 
 function parsePrinterCfgForDimensions(cfgText) {
   const dimensions = { bedX: null, bedY: null, bedZ: null };
-  
+
   const x = cfgText.match(/\[stepper_x\][\s\S]*?position_max:\s*(\d+)/i);
   const y = cfgText.match(/\[stepper_y\][\s\S]*?position_max:\s*(\d+)/i);
   const z = cfgText.match(/\[stepper_z\][\s\S]*?position_max:\s*(\d+)/i);
-  
+
   if (x) dimensions.bedX = parseFloat(x[1]);
   if (y) dimensions.bedY = parseFloat(y[1]);
   if (z) dimensions.bedZ = parseFloat(z[1]);
-  
+
   return dimensions;
 }
 
 function handleCfgUpload(file) {
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     const cfg = e.target.result;
     const dim = parsePrinterCfgForDimensions(cfg);
-    
+
     if (dim.bedX) {
       document.getElementById("checkerBedX").value = dim.bedX;
     }
@@ -362,35 +416,51 @@ function handleCfgUpload(file) {
     if (dim.bedZ) {
       document.getElementById("checkerBedZ").value = dim.bedZ;
     }
-    
+
     const resultsDiv = document.getElementById("checkerResults");
-    resultsDiv.innerHTML = `<div class="checker-summary pass">Loaded printer.cfg (${dim.bedX || '?'} x ${dim.bedY || '?'} x ${dim.bedZ || '?'})</div>`;
-    
+    resultsDiv.innerHTML = `<div class="checker-summary pass">Loaded printer.cfg (${dim.bedX || "?"} x ${dim.bedY || "?"} x ${dim.bedZ || "?"})</div>`;
+
     setTimeout(() => {
-      if (document.getElementById("macroInput").value.trim()) runBoundaryCheck();
+      if (document.getElementById("macroInput").value.trim())
+        runBoundaryCheck();
     }, 100);
   };
   reader.readAsText(file);
 }
 
 function parseGcodeMoves(gcode) {
-  const lines = gcode.split('\n');
+  const lines = gcode.split("\n");
   const moves = [];
-  let currentX = 0, currentY = 0, currentZ = 0;
+  let currentX = 0,
+    currentY = 0,
+    currentZ = 0;
   let isRelative = false;
   const moveRegex = /G0?1\s*([^;]*)/i;
   lines.forEach((line, idx) => {
     const clean = line.trim();
-    if (clean.startsWith('[') || clean.toLowerCase().startsWith('gcode:') || clean === '') return;
-    if (/G90/i.test(clean)) { isRelative = false; return; }
-    if (/G91/i.test(clean)) { isRelative = true; return; }
+    if (
+      clean.startsWith("[") ||
+      clean.toLowerCase().startsWith("gcode:") ||
+      clean === ""
+    )
+      return;
+    if (/G90/i.test(clean)) {
+      isRelative = false;
+      return;
+    }
+    if (/G91/i.test(clean)) {
+      isRelative = true;
+      return;
+    }
     const match = clean.match(moveRegex);
     if (!match) return;
     const params = match[1];
     const xMatch = params.match(/X(-?\d+\.?\d*)/i);
     const yMatch = params.match(/Y(-?\d+\.?\d*)/i);
     const zMatch = params.match(/Z(-?\d+\.?\d*)/i);
-    let newX = currentX, newY = currentY, newZ = currentZ;
+    let newX = currentX,
+      newY = currentY,
+      newZ = currentZ;
     if (isRelative) {
       if (xMatch) newX += parseFloat(xMatch[1]);
       if (yMatch) newY += parseFloat(yMatch[1]);
@@ -409,50 +479,77 @@ function parseGcodeMoves(gcode) {
 }
 
 function checkMovesAgainstBed(moves, bedX, bedY, bedZ) {
-  const errors = [], warnings = [];
-  const maxX = parseFloat(bedX), maxY = parseFloat(bedY), maxZ = parseFloat(bedZ);
-  moves.forEach(move => {
-    if (move.x < 0 || move.x > maxX) errors.push({ line: move.line, text: move.text, reason: `X = ${move.x.toFixed(2)} out of bounds (0-${maxX})` });
-    if (move.y < 0 || move.y > maxY) errors.push({ line: move.line, text: move.text, reason: `Y = ${move.y.toFixed(2)} out of bounds (0-${maxY})` });
-    if (move.z < 0) errors.push({ line: move.line, text: move.text, reason: `Z = ${move.z.toFixed(2)} below 0 (would crash)` });
-    if (move.z > maxZ) warnings.push({ line: move.line, text: move.text, reason: `Z = ${move.z.toFixed(2)} exceeds max height (${maxZ})` });
+  const errors = [],
+    warnings = [];
+  const maxX = parseFloat(bedX),
+    maxY = parseFloat(bedY),
+    maxZ = parseFloat(bedZ);
+  moves.forEach((move) => {
+    if (move.x < 0 || move.x > maxX)
+      errors.push({
+        line: move.line,
+        text: move.text,
+        reason: `X = ${move.x.toFixed(2)} out of bounds (0-${maxX})`,
+      });
+    if (move.y < 0 || move.y > maxY)
+      errors.push({
+        line: move.line,
+        text: move.text,
+        reason: `Y = ${move.y.toFixed(2)} out of bounds (0-${maxY})`,
+      });
+    if (move.z < 0)
+      errors.push({
+        line: move.line,
+        text: move.text,
+        reason: `Z = ${move.z.toFixed(2)} below 0 (would crash)`,
+      });
+    if (move.z > maxZ)
+      warnings.push({
+        line: move.line,
+        text: move.text,
+        reason: `Z = ${move.z.toFixed(2)} exceeds max height (${maxZ})`,
+      });
   });
   return { errors, warnings };
 }
 
 // ----------------------------------------------------------------------------------------
 function drawBedPreview(moves, bedX, bedY) {
-  const canvas = document.getElementById('bedCanvas');
+  const canvas = document.getElementById("bedCanvas");
   if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width, h = canvas.height;
-  
-  
+  const ctx = canvas.getContext("2d");
+  const w = canvas.width,
+    h = canvas.height;
+
   const gradient = ctx.createLinearGradient(0, 0, w, h);
-  gradient.addColorStop(0, '#1a1a2e');
-  gradient.addColorStop(1, '#16213e');
+  gradient.addColorStop(0, "#1a1a2e");
+  gradient.addColorStop(1, "#16213e");
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, w, h);
-  
-  const maxX = parseFloat(bedX), maxY = parseFloat(bedY);
+
+  const maxX = parseFloat(bedX),
+    maxY = parseFloat(bedY);
   const padding = 10;
   const plateX = padding;
   const plateY = padding;
-  const plateW = w - (padding * 2);
-  const plateH = h - (padding * 2);
-  
+  const plateW = w - padding * 2;
+  const plateH = h - padding * 2;
+
   function toCanvas(x, y) {
-    return { x: plateX + (x / maxX) * plateW, y: plateY + plateH - (y / maxY) * plateH };
+    return {
+      x: plateX + (x / maxX) * plateW,
+      y: plateY + plateH - (y / maxY) * plateH,
+    };
   }
-  
-  //  THE BED PLATE 
-  ctx.fillStyle = '#2a2a3e';  
+
+  //  THE BED PLATE
+  ctx.fillStyle = "#2a2a3e";
   ctx.fillRect(plateX, plateY, plateW, plateH);
-  
-  //  DRAW GRID LINES 
-  ctx.strokeStyle = '#3a3a55';
+
+  //  DRAW GRID LINES
+  ctx.strokeStyle = "#3a3a55";
   ctx.lineWidth = 0.5;
-  
+
   // Vertical grid lines
   const gridLines = 5;
   for (let i = 1; i <= gridLines; i++) {
@@ -462,7 +559,7 @@ function drawBedPreview(moves, bedX, bedY) {
     ctx.lineTo(x, plateY + plateH);
     ctx.stroke();
   }
-  
+
   // Horizontal grid lines
   for (let i = 1; i <= gridLines; i++) {
     const y = plateY + (i / gridLines) * plateH;
@@ -471,42 +568,43 @@ function drawBedPreview(moves, bedX, bedY) {
     ctx.lineTo(plateX + plateW, y);
     ctx.stroke();
   }
-  
-  //  DRAW BORDER 
-  ctx.strokeStyle = '#00ffaa';
+
+  //  DRAW BORDER
+  ctx.strokeStyle = "#00ffaa";
   ctx.lineWidth = 2;
   ctx.strokeRect(plateX, plateY, plateW, plateH);
-  
-  // DRAW ORIGIN (0,0) MARKER 
+
+  // DRAW ORIGIN (0,0) MARKER
   const origin = toCanvas(0, 0);
   ctx.beginPath();
   ctx.arc(origin.x, origin.y, 5, 0, Math.PI * 2);
-  ctx.fillStyle = '#ffaa44';
+  ctx.fillStyle = "#ffaa44";
   ctx.fill();
-  ctx.fillStyle = 'white';
-  ctx.font = 'bold 10px monospace';
-  ctx.fillText('Home (0,0)', origin.x + 8, origin.y - 5);
-  
+  ctx.fillStyle = "white";
+  ctx.font = "bold 10px monospace";
+  ctx.fillText("Home (0,0)", origin.x + 8, origin.y - 5);
+
   //  DRAW STARTING POINT. this is the first move
   if (moves && moves.length > 0 && moves[0].x != null && moves[0].y != null) {
     const start = toCanvas(moves[0].x, moves[0].y);
     ctx.beginPath();
     ctx.arc(start.x, start.y, 6, 0, Math.PI * 2);
-    ctx.fillStyle = '#00ffaa';
+    ctx.fillStyle = "#00ffaa";
     ctx.fill();
     ctx.beginPath();
     ctx.arc(start.x, start.y, 3, 0, Math.PI * 2);
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = "#ffffff";
     ctx.fill();
-    ctx.fillStyle = '#00ffaa';
-    ctx.font = 'bold 10px monospace';
-    ctx.fillText('START', start.x - 18, start.y - 8);
+    ctx.fillStyle = "#00ffaa";
+    ctx.font = "bold 10px monospace";
+    ctx.fillText("START", start.x - 18, start.y - 8);
   }
-  
-  // DRAW MOVE PATHS 
+
+  // DRAW MOVE PATHS
   if (moves && moves.length > 0) {
     for (let i = 1; i < moves.length; i++) {
-      const a = moves[i - 1], b = moves[i];
+      const a = moves[i - 1],
+        b = moves[i];
       if (a.x == null || b.x == null) continue;
       const p1 = toCanvas(a.x, a.y);
       const p2 = toCanvas(b.x, b.y);
@@ -514,18 +612,18 @@ function drawBedPreview(moves, bedX, bedY) {
       ctx.beginPath();
       ctx.moveTo(p1.x, p1.y);
       ctx.lineTo(p2.x, p2.y);
-      ctx.strokeStyle = inBounds ? '#00ffaa' : '#ff4444';
+      ctx.strokeStyle = inBounds ? "#00ffaa" : "#ff4444";
       ctx.lineWidth = 2.5;
       ctx.stroke();
     }
   }
-  
-  //DRAW CENTER MARKER  
+
+  //DRAW CENTER MARKER
   const centerX = plateX + plateW / 2;
   const centerY = plateY + plateH / 2;
   ctx.beginPath();
   ctx.arc(centerX, centerY, 3, 0, Math.PI * 2);
-  ctx.fillStyle = '#888888';
+  ctx.fillStyle = "#888888";
   ctx.fill();
 }
 
@@ -537,12 +635,13 @@ function runBoundaryCheck() {
   const z = document.getElementById("checkerBedZ").value;
   const resultsDiv = document.getElementById("checkerResults");
   if (!text.trim()) {
-    resultsDiv.innerHTML = '<div class="checker-summary pass">Paste G-code to check boundaries</div>';
+    resultsDiv.innerHTML =
+      '<div class="checker-summary pass">Paste G-code to check boundaries</div>';
     return;
   }
   const moves = parseGcodeMoves(text);
   const { errors, warnings } = checkMovesAgainstBed(moves, x, y, z);
-  let html = '';
+  let html = "";
   if (!errors.length && !warnings.length) {
     html += `<div class="checker-summary pass">SAFE — All ${moves.length} moves are within bounds (0-${x}, 0-${y}, 0-${z})</div>`;
   } else if (errors.length) {
@@ -550,111 +649,118 @@ function runBoundaryCheck() {
   } else if (warnings.length) {
     html += `<div class="checker-summary pass">${warnings.length} warning(s)</div>`;
   }
-  errors.forEach(e => { html += `<div class="checker-error">Line ${e.line}: ${e.reason}<br><span style="font-size: 11px; opacity: 0.7;">${e.text}</span></div>`; });
-  warnings.forEach(w => { html += `<div class="checker-warning">Line ${w.line}: ${w.reason}<br><span style="font-size: 11px; opacity: 0.7;">${w.text}</span></div>`; });
+  errors.forEach((e) => {
+    html += `<div class="checker-error">Line ${e.line}: ${e.reason}<br><span style="font-size: 11px; opacity: 0.7;">${e.text}</span></div>`;
+  });
+  warnings.forEach((w) => {
+    html += `<div class="checker-warning">Line ${w.line}: ${w.reason}<br><span style="font-size: 11px; opacity: 0.7;">${w.text}</span></div>`;
+  });
   resultsDiv.innerHTML = html;
   drawBedPreview(moves, x, y);
 }
 
-
 // MACRO FILE UPLOAD FUNCTIONS. new addition since output via text has a bit of friction
 
-
-let currentMacroMode = 'paste'; // 'paste' or 'file'
-let currentExtractedGcode = '';
+let currentMacroMode = "paste"; // 'paste' or 'file'
+let currentExtractedGcode = "";
 
 function setMacroMode(mode) {
   currentMacroMode = mode;
-  
-  const pasteModeArea = document.getElementById('pasteModeArea');
-  const fileModeArea = document.getElementById('fileModeArea');
-  const pasteBtn = document.getElementById('pasteModeBtn');
-  const fileBtn = document.getElementById('fileModeBtn');
-  
+
+  const pasteModeArea = document.getElementById("pasteModeArea");
+  const fileModeArea = document.getElementById("fileModeArea");
+  const pasteBtn = document.getElementById("pasteModeBtn");
+  const fileBtn = document.getElementById("fileModeBtn");
+
   if (!pasteModeArea || !fileModeArea) return;
-  
-  if (mode === 'paste') {
-    pasteModeArea.style.display = 'block';
-    fileModeArea.style.display = 'none';
-    if (pasteBtn) pasteBtn.classList.add('active');
-    if (fileBtn) fileBtn.classList.remove('active');
+
+  if (mode === "paste") {
+    pasteModeArea.style.display = "block";
+    fileModeArea.style.display = "none";
+    if (pasteBtn) pasteBtn.classList.add("active");
+    if (fileBtn) fileBtn.classList.remove("active");
   } else {
-    pasteModeArea.style.display = 'none';
-    fileModeArea.style.display = 'block';
-    if (pasteBtn) pasteBtn.classList.remove('active');
-    if (fileBtn) fileBtn.classList.add('active');
+    pasteModeArea.style.display = "none";
+    fileModeArea.style.display = "block";
+    if (pasteBtn) pasteBtn.classList.remove("active");
+    if (fileBtn) fileBtn.classList.add("active");
   }
 }
 
 function parseKlipperMacroFile(content) {
-  const lines = content.split('\n');
+  const lines = content.split("\n");
   const gcodeLines = [];
   let insideGcode = false;
-  
+
   for (let line of lines) {
     const trimmed = line.trim();
-    
-    if (trimmed === '') continue;
-    
+
+    if (trimmed === "") continue;
+
     // Skip comments here
-    if (trimmed.startsWith('#')) continue;
-    
+    if (trimmed.startsWith("#")) continue;
+
     // Check if it's a Klipper macro
-    if (trimmed.startsWith('[gcode_macro')) {
+    if (trimmed.startsWith("[gcode_macro")) {
       insideGcode = false;
       continue;
     }
-    
+
     // Klipper macro gcode: section
-    if (trimmed === 'gcode:' || trimmed.startsWith('gcode:')) {
+    if (trimmed === "gcode:" || trimmed.startsWith("gcode:")) {
       insideGcode = true;
-      const afterColon = trimmed.substring(trimmed.indexOf(':') + 1).trim();
-      if (afterColon && !afterColon.startsWith('#')) {
+      const afterColon = trimmed.substring(trimmed.indexOf(":") + 1).trim();
+      if (afterColon && !afterColon.startsWith("#")) {
         gcodeLines.push(afterColon);
       }
       continue;
     }
-    
+
     // If inside Klipper macro, collect lines
     if (insideGcode) {
-      if (trimmed.includes('{%') || trimmed.includes('{{') || trimmed.includes('%}') || trimmed.includes('}}')) {
+      if (
+        trimmed.includes("{%") ||
+        trimmed.includes("{{") ||
+        trimmed.includes("%}") ||
+        trimmed.includes("}}")
+      ) {
         continue;
       }
-      if (trimmed.startsWith('#')) {
+      if (trimmed.startsWith("#")) {
         continue;
       }
-      if (trimmed && !trimmed.startsWith('#')) {
+      if (trimmed && !trimmed.startsWith("#")) {
         gcodeLines.push(trimmed);
       }
     } else {
-      
-      if (trimmed && !trimmed.startsWith(';') && !trimmed.startsWith('#')) {
+      if (trimmed && !trimmed.startsWith(";") && !trimmed.startsWith("#")) {
         gcodeLines.push(trimmed);
       }
     }
   }
-  
-  return gcodeLines.join('\n');
+
+  return gcodeLines.join("\n");
 }
 
 function handleMacroFileUpload(file) {
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     const content = e.target.result;
     const extractedGcode = parseKlipperMacroFile(content);
     currentExtractedGcode = extractedGcode;
-    
-    const previewArea = document.getElementById('extractedGcodePreview');
+
+    const previewArea = document.getElementById("extractedGcodePreview");
     if (previewArea) {
-      previewArea.value = extractedGcode || '# No G-code found in macro file';
+      previewArea.value = extractedGcode || "# No G-code found in macro file";
     }
-    
+
     if (extractedGcode.trim()) {
       runBoundaryCheckWithGcode(extractedGcode);
     } else {
-      const resultsDiv = document.getElementById('checkerResults');
+      const resultsDiv = document.getElementById("checkerResults");
       if (resultsDiv) {
-        resultsDiv.innerHTML = '<div class="checker-summary pass">No G-code found in macro file.</div>';
+        resultsDiv.innerHTML =
+          '<div class="checker-summary pass">No G-code found in macro file.</div>';
       }
     }
   };
@@ -662,10 +768,10 @@ function handleMacroFileUpload(file) {
 }
 
 function getCurrentMacroGcode() {
-  if (currentMacroMode === 'paste') {
-    return document.getElementById('macroInput')?.value || '';
+  if (currentMacroMode === "paste") {
+    return document.getElementById("macroInput")?.value || "";
   } else {
-    return currentExtractedGcode || '';
+    return currentExtractedGcode || "";
   }
 }
 
@@ -674,20 +780,20 @@ function runBoundaryCheckWithGcode(gcodeText) {
   const y = document.getElementById("checkerBedY")?.value;
   const z = document.getElementById("checkerBedZ")?.value;
   const resultsDiv = document.getElementById("checkerResults");
-  
+
   if (!gcodeText || !gcodeText.trim()) {
-    if (resultsDiv) resultsDiv.innerHTML = '<div class="checker-summary pass">No G-code to check</div>';
+    if (resultsDiv)
+      resultsDiv.innerHTML =
+        '<div class="checker-summary pass">No G-code to check</div>';
     return;
   }
-  
+
   const moves = parseGcodeMoves(gcodeText);
   const { errors, warnings } = checkMovesAgainstBed(moves, x, y, z);
-  
 
+  const MAX_DISPLAY = 1000;
 
- const MAX_DISPLAY = 1000;
-  
-  let html = '';
+  let html = "";
   if (!errors.length && !warnings.length) {
     html += `<div class="checker-summary pass">SAFE — All ${moves.length} moves are within bounds (0-${x}, 0-${y}, 0-${z})</div>`;
   } else if (errors.length) {
@@ -695,25 +801,23 @@ function runBoundaryCheckWithGcode(gcodeText) {
   } else if (warnings.length) {
     html += `<div class="checker-summary pass">${warnings.length} warning(s)</div>`;
   }
- 
- errors.slice(0, MAX_DISPLAY).forEach(e => { 
-    html += `<div class="checker-error">Line ${e.line}: ${e.reason}<br><span style="font-size: 11px; opacity: 0.7;">${e.text}</span></div>`; 
+
+  errors.slice(0, MAX_DISPLAY).forEach((e) => {
+    html += `<div class="checker-error">Line ${e.line}: ${e.reason}<br><span style="font-size: 11px; opacity: 0.7;">${e.text}</span></div>`;
   });
-  
+
   if (errors.length > MAX_DISPLAY) {
     html += `<div class="checker-error">... and ${errors.length - MAX_DISPLAY} more errors not shown</div>`;
   }
-  
-  
-  // WARNINGS WITH CAP 
-  warnings.slice(0, MAX_DISPLAY).forEach(w => { 
-    html += `<div class="checker-warning">Line ${w.line}: ${w.reason}<br><span style="font-size: 11px; opacity: 0.7;">${w.text}</span></div>`; 
+
+  // WARNINGS WITH CAP
+  warnings.slice(0, MAX_DISPLAY).forEach((w) => {
+    html += `<div class="checker-warning">Line ${w.line}: ${w.reason}<br><span style="font-size: 11px; opacity: 0.7;">${w.text}</span></div>`;
   });
-  
+
   if (warnings.length > MAX_DISPLAY) {
     html += `<div class="checker-warning">... and ${warnings.length - MAX_DISPLAY} more warnings not shown</div>`;
   }
-
 
   if (resultsDiv) resultsDiv.innerHTML = html;
   drawBedPreview(moves, x, y);
@@ -721,74 +825,75 @@ function runBoundaryCheckWithGcode(gcodeText) {
 
 // Override original runBoundaryCheck to use current mode
 const originalRunBoundaryCheck = runBoundaryCheck;
-window.runBoundaryCheck = function() {
+window.runBoundaryCheck = function () {
   const gcodeText = getCurrentMacroGcode();
   runBoundaryCheckWithGcode(gcodeText);
 };
 // ADDED THE  BUTTONS TO UI
 
-
 function addClearButtons() {
   // Add buttons to CONFIGURATION CARD (first card with form)
-  const configCard = document.querySelector('#cfgForm')?.closest('.card');
-  
+  const configCard = document.querySelector("#cfgForm")?.closest(".card");
+
   if (configCard) {
-    const buttonGroup = configCard.querySelector('.button-group');
-    
+    const buttonGroup = configCard.querySelector(".button-group");
+
     // Clear Generator button (clears output AND bed dimensions to 0) reminder to not touch
-    if (buttonGroup && !document.getElementById('clearGeneratorBtn')) {
-      const clearGeneratorBtn = document.createElement('button');
-      clearGeneratorBtn.id = 'clearGeneratorBtn';
-      clearGeneratorBtn.className = 'btn-secondary';
-      clearGeneratorBtn.textContent = 'Clear Generator';
+    if (buttonGroup && !document.getElementById("clearGeneratorBtn")) {
+      const clearGeneratorBtn = document.createElement("button");
+      clearGeneratorBtn.id = "clearGeneratorBtn";
+      clearGeneratorBtn.className = "btn-secondary";
+      clearGeneratorBtn.textContent = "Clear Generator";
       clearGeneratorBtn.onclick = handleClearGenerator;
       buttonGroup.appendChild(clearGeneratorBtn);
     }
   }
 
   // Add buttons to OUTPUT CARD
-  const outputCard = document.querySelector('#outputCfg')?.closest('.card');
-  
+  const outputCard = document.querySelector("#outputCfg")?.closest(".card");
+
   if (outputCard) {
-    const buttonGroup = outputCard.querySelector('.button-group');
-    
+    const buttonGroup = outputCard.querySelector(".button-group");
+
     let outputButtonGroup = buttonGroup;
-    
+
     if (!outputButtonGroup) {
-      outputButtonGroup = document.createElement('div');
-      outputButtonGroup.className = 'button-group';
-      outputButtonGroup.style.marginTop = '15px';
-      
-      const infoBar = outputCard.querySelector('.info-bar');
+      outputButtonGroup = document.createElement("div");
+      outputButtonGroup.className = "button-group";
+      outputButtonGroup.style.marginTop = "15px";
+
+      const infoBar = outputCard.querySelector(".info-bar");
       if (infoBar) {
-        infoBar.insertAdjacentElement('afterend', outputButtonGroup);
+        infoBar.insertAdjacentElement("afterend", outputButtonGroup);
       } else {
         outputCard.appendChild(outputButtonGroup);
       }
     }
-    
+
     // Clear Config button (clears only output)
-    if (!document.getElementById('clearConfigBtn')) {
-      const clearConfigBtn = document.createElement('button');
-      clearConfigBtn.id = 'clearConfigBtn';
-      clearConfigBtn.className = 'btn-secondary';
-      clearConfigBtn.textContent = 'Clear Config';
+    if (!document.getElementById("clearConfigBtn")) {
+      const clearConfigBtn = document.createElement("button");
+      clearConfigBtn.id = "clearConfigBtn";
+      clearConfigBtn.className = "btn-secondary";
+      clearConfigBtn.textContent = "Clear Config";
       clearConfigBtn.onclick = handleClearConfig;
       outputButtonGroup.appendChild(clearConfigBtn);
     }
   }
 
   // Clear Upload button for Boundary Checker
-  const checkerCard = document.getElementById('boundaryChecker');
+  const checkerCard = document.getElementById("boundaryChecker");
   if (checkerCard) {
-    const fileUploadGroup = checkerCard.querySelector('.form-group:has(input[type="file"])');
-    if (fileUploadGroup && !document.getElementById('clearUploadBtn')) {
-      const clearUploadBtn = document.createElement('button');
-      clearUploadBtn.id = 'clearUploadBtn';
-      clearUploadBtn.className = 'btn-secondary';
-      clearUploadBtn.textContent = 'Clear Upload';
-      clearUploadBtn.style.marginTop = '8px';
-      clearUploadBtn.style.width = '100%';
+    const fileUploadGroup = checkerCard.querySelector(
+      '.form-group:has(input[type="file"])',
+    );
+    if (fileUploadGroup && !document.getElementById("clearUploadBtn")) {
+      const clearUploadBtn = document.createElement("button");
+      clearUploadBtn.id = "clearUploadBtn";
+      clearUploadBtn.className = "btn-secondary";
+      clearUploadBtn.textContent = "Clear Upload";
+      clearUploadBtn.style.marginTop = "8px";
+      clearUploadBtn.style.width = "100%";
       clearUploadBtn.onclick = handleClearUpload;
       fileUploadGroup.appendChild(clearUploadBtn);
     }
@@ -804,90 +909,107 @@ document.addEventListener("DOMContentLoaded", () => {
     saveSession();
   }
   attachAutoSave();
-  document.getElementById("generateBtn").addEventListener("click", handleGenerate);
-  document.getElementById("downloadBtn").addEventListener("click", handleDownload);
+  document
+    .getElementById("generateBtn")
+    .addEventListener("click", handleGenerate);
+  document
+    .getElementById("downloadBtn")
+    .addEventListener("click", handleDownload);
   addClearButtons();
-  
-  const cfgUpload = document.getElementById('cfgUpload');
-  const checkBoundsBtn = document.getElementById('checkBoundsBtn');
-  const clearMacroBtn = document.getElementById('clearMacroBtn');
-  const macroInput = document.getElementById('macroInput');
-  const checkerResults = document.getElementById('checkerResults');
-  
+
+  const cfgUpload = document.getElementById("cfgUpload");
+  const checkBoundsBtn = document.getElementById("checkBoundsBtn");
+  const clearMacroBtn = document.getElementById("clearMacroBtn");
+  const macroInput = document.getElementById("macroInput");
+  const checkerResults = document.getElementById("checkerResults");
+
   // Mode toggle elements! similar to demo
-  const pasteModeBtn = document.getElementById('pasteModeBtn');
-  const fileModeBtn = document.getElementById('fileModeBtn');
-  const macroFileUpload = document.getElementById('macroFileUpload');
-  
-  if (cfgUpload) cfgUpload.addEventListener('change', e => { if (e.target.files[0]) handleCfgUpload(e.target.files[0]); });
-  if (checkBoundsBtn) checkBoundsBtn.addEventListener('click', () => window.runBoundaryCheck());
-  if (clearMacroBtn) clearMacroBtn.addEventListener('click', () => {
-    if (macroInput) macroInput.value = '';
-    if (checkerResults) checkerResults.innerHTML = '';
-    if (macroFileUpload) macroFileUpload.value = '';
-    if (document.getElementById('extractedGcodePreview')) {
-      document.getElementById('extractedGcodePreview').value = '';
-    }
-    currentExtractedGcode = '';
-    drawBedPreview([], document.getElementById('checkerBedX')?.value || 235, document.getElementById('checkerBedY')?.value || 235);
-  });
-  
+  const pasteModeBtn = document.getElementById("pasteModeBtn");
+  const fileModeBtn = document.getElementById("fileModeBtn");
+  const macroFileUpload = document.getElementById("macroFileUpload");
+
+  if (cfgUpload)
+    cfgUpload.addEventListener("change", (e) => {
+      if (e.target.files[0]) handleCfgUpload(e.target.files[0]);
+    });
+  if (checkBoundsBtn)
+    checkBoundsBtn.addEventListener("click", () => window.runBoundaryCheck());
+  if (clearMacroBtn)
+    clearMacroBtn.addEventListener("click", () => {
+      if (macroInput) macroInput.value = "";
+      if (checkerResults) checkerResults.innerHTML = "";
+      if (macroFileUpload) macroFileUpload.value = "";
+      if (document.getElementById("extractedGcodePreview")) {
+        document.getElementById("extractedGcodePreview").value = "";
+      }
+      currentExtractedGcode = "";
+      drawBedPreview(
+        [],
+        document.getElementById("checkerBedX")?.value || 235,
+        document.getElementById("checkerBedY")?.value || 235,
+      );
+    });
+
   // Mode toggle listeners
   if (pasteModeBtn) {
-    pasteModeBtn.addEventListener('click', () => setMacroMode('paste'));
+    pasteModeBtn.addEventListener("click", () => setMacroMode("paste"));
   }
   if (fileModeBtn) {
-    fileModeBtn.addEventListener('click', () => setMacroMode('file'));
+    fileModeBtn.addEventListener("click", () => setMacroMode("file"));
   }
   if (macroFileUpload) {
-    macroFileUpload.addEventListener('change', e => {
+    macroFileUpload.addEventListener("change", (e) => {
       if (e.target.files[0]) handleMacroFileUpload(e.target.files[0]);
     });
   }
-  
-  const syncBtn = document.createElement('button');
-  syncBtn.textContent = 'Sync from Generator';
-  syncBtn.className = 'toggle-btn';
+
+  const syncBtn = document.createElement("button");
+  syncBtn.textContent = "Sync from Generator";
+  syncBtn.className = "toggle-btn";
   syncBtn.onclick = () => toggleSync(syncBtn);
-  const row = document.querySelector('#checkerContent .row');
+  const row = document.querySelector("#checkerContent .row");
   if (row) {
-    const wrap = document.createElement('div');
-    wrap.className = 'form-group';
+    const wrap = document.createElement("div");
+    wrap.className = "form-group";
     wrap.appendChild(syncBtn);
     row.parentNode.insertBefore(wrap, row.nextSibling);
   }
-  
-  ['bedX', 'bedY', 'bedZ'].forEach(id => {
-    document.getElementById(id)?.addEventListener('input', () => { if (syncEnabled) syncFromGenerator(); });
+
+  ["bedX", "bedY", "bedZ"].forEach((id) => {
+    document.getElementById(id)?.addEventListener("input", () => {
+      if (syncEnabled) syncFromGenerator();
+    });
   });
 });
 
-
-
-
 // CLEAR GENERATOR (clears output and bed dimensions to 0) : changed to "" instead of 0
 
-
 function handleClearGenerator() {
-  if (confirm("Clear generator? This will clear the output and reset bed dimensions to 0. Control board and other settings will remain unchanged.")) {
-    
+  if (
+    confirm(
+      "Clear generator? This will clear the output and reset bed dimensions to 0. Control board and other settings will remain unchanged.",
+    )
+  ) {
     // Clear output textarea
-    document.getElementById("outputCfg").value = "\n# Generate a new config using the form above.";
-    
+    document.getElementById("outputCfg").value =
+      "\n# Generate a new config using the form above.";
+
     // Reset bed dimensions to 0. i changed to ""
     document.getElementById("bedX").value = "";
     document.getElementById("bedY").value = "";
     document.getElementById("bedZ").value = "";
-    
+
     // Save session to persist cleared state
     saveSession();
-    
+
     // Visual stuff
     const btn = document.getElementById("clearGeneratorBtn");
     if (btn) {
       const originalText = btn.textContent;
       btn.textContent = "Cleared";
-      setTimeout(() => { btn.textContent = originalText; }, 1500);
+      setTimeout(() => {
+        btn.textContent = originalText;
+      }, 1500);
     }
   }
 }

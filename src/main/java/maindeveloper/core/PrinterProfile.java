@@ -11,12 +11,13 @@ public class PrinterProfile {
     private double extrusionMultiplier = 1.0;
 
     // Default constructor
-    public PrinterProfile() {}
+    public PrinterProfile() {
+    }
 
     // Constructor with all fields
     public PrinterProfile(String name, double maxX, double maxY, double maxZ,
-                          double nozzleDiameter, double filamentDiameter,
-                          double layerHeight, double extrusionMultiplier) {
+            double nozzleDiameter, double filamentDiameter,
+            double layerHeight, double extrusionMultiplier) {
         this.name = name;
         this.maxX = maxX;
         this.maxY = maxY;
@@ -28,27 +29,67 @@ public class PrinterProfile {
     }
 
     // Getters and setters
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+    public String getName() {
+        return name;
+    }
 
-    public double getMaxX() { return maxX; }
-    public void setMaxX(double maxX) { this.maxX = maxX; }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-    public double getMaxY() { return maxY; }
-    public void setMaxY(double maxY) { this.maxY = maxY; }
+    public double getMaxX() {
+        return maxX;
+    }
 
-    public double getMaxZ() { return maxZ; }
-    public void setMaxZ(double maxZ) { this.maxZ = maxZ; }
+    public void setMaxX(double maxX) {
+        this.maxX = maxX;
+    }
 
-    public double getNozzleDiameter() { return nozzleDiameter; }
-    public void setNozzleDiameter(double nozzleDiameter) { this.nozzleDiameter = nozzleDiameter; }
+    public double getMaxY() {
+        return maxY;
+    }
 
-    public double getFilamentDiameter() { return filamentDiameter; }
-    public void setFilamentDiameter(double filamentDiameter) { this.filamentDiameter = filamentDiameter; }
+    public void setMaxY(double maxY) {
+        this.maxY = maxY;
+    }
 
-    public double getLayerHeight() { return layerHeight; }
-    public void setLayerHeight(double layerHeight) { this.layerHeight = layerHeight; }
+    public double getMaxZ() {
+        return maxZ;
+    }
 
-    public double getExtrusionMultiplier() { return extrusionMultiplier; }
-    public void setExtrusionMultiplier(double extrusionMultiplier) { this.extrusionMultiplier = extrusionMultiplier; }
+    public void setMaxZ(double maxZ) {
+        this.maxZ = maxZ;
+    }
+
+    public double getNozzleDiameter() {
+        return nozzleDiameter;
+    }
+
+    public void setNozzleDiameter(double nozzleDiameter) {
+        this.nozzleDiameter = nozzleDiameter;
+    }
+
+    public double getFilamentDiameter() {
+        return filamentDiameter;
+    }
+
+    public void setFilamentDiameter(double filamentDiameter) {
+        this.filamentDiameter = filamentDiameter;
+    }
+
+    public double getLayerHeight() {
+        return layerHeight;
+    }
+
+    public void setLayerHeight(double layerHeight) {
+        this.layerHeight = layerHeight;
+    }
+
+    public double getExtrusionMultiplier() {
+        return extrusionMultiplier;
+    }
+
+    public void setExtrusionMultiplier(double extrusionMultiplier) {
+        this.extrusionMultiplier = extrusionMultiplier;
+    }
 }

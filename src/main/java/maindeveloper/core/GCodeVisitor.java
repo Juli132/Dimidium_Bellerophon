@@ -14,169 +14,182 @@ import java.util.Map;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-
 import jupitore.gen.*;
 
 public abstract class GCodeVisitor extends JupitoreBaseVisitor<String> {
-// ADDED 4/10/2026
-protected PrinterSettings settings = new PrinterSettings();
-protected boolean enablePaging = false;
-protected boolean autoExtrudeEnabled = false;
-// 6/17/26
-protected Map<String, Double> variables = new HashMap<>();
-// Temporary storage for a single move (used in visitCoordList)
-private double targetX = Double.NaN;
-private double targetY = Double.NaN;
-private double targetZ = Double.NaN;
-private boolean hasManualE = false;
-private double manualEValue = 0.0;
-private boolean hasAutoE = false;   // user wrote "E" without value
-protected double centerX = 0; // <-- Jrepeat center for X
-protected double centerY = 0; // <-- Jrepeat center for Y
-protected boolean insideLayer = false;
-// Hardware safety limiter: enforces axis bounds at compile time.
-protected HardwareLimiter limiter;
-public void setEnablePaging(boolean enable) {
-    System.out.println("VISITOR LOG: Paging has been set to: " + enable);
-    this.enablePaging = enable;
-}
+    // ADDED 4/10/2026
+    protected PrinterSettings settings = new PrinterSettings();
+    protected boolean enablePaging = false;
+    protected boolean autoExtrudeEnabled = false;
+    // 6/17/26
+    protected Map<String, Double> variables = new HashMap<>();
+    // Temporary storage for a single move (used in visitCoordList)
+    private double targetX = Double.NaN;
+    private double targetY = Double.NaN;
+    private double targetZ = Double.NaN;
+    private boolean hasManualE = false;
+    private double manualEValue = 0.0;
+    private boolean hasAutoE = false; // user wrote "E" without value
+    protected double centerX = 0; // <-- Jrepeat center for X
+    protected double centerY = 0; // <-- Jrepeat center for Y
+    protected boolean insideLayer = false;
+    // Hardware safety limiter: enforces axis bounds at compile time.
+    protected HardwareLimiter limiter;
 
+    public void setEnablePaging(boolean enable) {
+        System.out.println("VISITOR LOG: Paging has been set to: " + enable);
+        this.enablePaging = enable;
+    }
 
-
-public GCodeVisitor(PrinterProfile profile) {
-     System.out.println("=== DEBUG: GCodeVisitor constructor ===");
-    System.out.println("Profile maxX = " + profile.getMaxX());
-    System.out.println("Profile maxY = " + profile.getMaxY());
-    System.out.println("Profile maxZ = " + profile.getMaxZ());
-    this.limiter = new HardwareLimiter(profile.getMaxX(), profile.getMaxY(), profile.getMaxZ());
-    this.settings.setNozzleDiameter(profile.getNozzleDiameter());
-    this.settings.setFilamentDiameter(profile.getFilamentDiameter());
-    this.settings.setLayerHeight(profile.getLayerHeight());
-    this.settings.setExtrusionMultiplier(profile.getExtrusionMultiplier());
-}
+    public GCodeVisitor(PrinterProfile profile) {
+        System.out.println("=== DEBUG: GCodeVisitor constructor ===");
+        System.out.println("Profile maxX = " + profile.getMaxX());
+        System.out.println("Profile maxY = " + profile.getMaxY());
+        System.out.println("Profile maxZ = " + profile.getMaxZ());
+        this.limiter = new HardwareLimiter(profile.getMaxX(), profile.getMaxY(), profile.getMaxZ());
+        this.settings.setNozzleDiameter(profile.getNozzleDiameter());
+        this.settings.setFilamentDiameter(profile.getFilamentDiameter());
+        this.settings.setLayerHeight(profile.getLayerHeight());
+        this.settings.setExtrusionMultiplier(profile.getExtrusionMultiplier());
+    }
 
     // Abstract firmware-specific methods ----
     protected abstract String emitMacroHeader(String macroName);
+
     protected abstract String emitHeat(String target, double value, boolean wait);
+
     protected abstract String emitSetHeater(String target, double value);
+
     protected abstract String emitPause();
+
     protected abstract String emitResume();
+
     protected abstract String emitRespond(String message);
+
     protected abstract String emitCooldown(String target); // null = all off
+
     protected abstract String emitTimeoutSet(double seconds);
+
     protected abstract String emitLoadBedMesh(String profile);
+
     protected abstract String emitProbeCalibrate();
+
     protected abstract String emitSetPressureAdvance(double value);
+
     protected abstract String emitSetFan(double value);
+
     protected abstract String emitMacroCall(String macroName);
-    protected abstract String emitBedMeshCalibrate();  // LEVEL or BED_MESH_CALIBRATE
+
+    protected abstract String emitBedMeshCalibrate(); // LEVEL or BED_MESH_CALIBRATE
+
     protected abstract String emitPrintFile(String filename);
+
     protected abstract String emitIfStart(String condition);
+
     protected abstract String emitIfEnd();
 
-    /** 
+    /**
      * @param ctx
      * @return String
      */
-    // 4/10/2026 adding paging support to the visitor! lets see if this actually works
+    // 4/10/2026 adding paging support to the visitor! lets see if this actually
+    // works
     @Override
     public String visitProgram(JupitoreParser.ProgramContext ctx) {
 
-    // DEBUG: print all children of the program node
-    System.out.println("=== visitProgram: " + ctx.getChildCount() + " children ===");
-    for (int i = 0; i < ctx.getChildCount(); i++) {
-        ParseTree child = ctx.getChild(i);
-        System.out.println("  child " + i + ": " + child.getClass().getSimpleName() + " -> " + child.getText());
+        // DEBUG: print all children of the program node
+        System.out.println("=== visitProgram: " + ctx.getChildCount() + " children ===");
+        for (int i = 0; i < ctx.getChildCount(); i++) {
+            ParseTree child = ctx.getChild(i);
+            System.out.println("  child " + i + ": " + child.getClass().getSimpleName() + " -> " + child.getText());
+        }
+
+        if (this.enablePaging) {
+            try {
+                // Create a temporary file to store long gcodes
+                File tempFile = File.createTempFile("bph_scratch_", ".gcode");
+                System.out.println("PAGING ACTIVE: Writing to " + tempFile.getAbsolutePath());
+                tempFile.deleteOnExit(); // JVM cleans up on exit
+
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
+                    for (JupitoreParser.MacroContext macro : ctx.macro()) {
+                        String macroCode = visit(macro);
+                        if (macroCode != null && !macroCode.isEmpty()) {
+                            writer.write(macroCode);
+                            writer.write("\n");
+                            // This flushes the RAM so the garbage collector
+                            // can take the space used by the 'macroCode' string.
+                            writer.flush();
+                        }
+                    }
+                }
+
+                return "SUCCESS_PAGED:" + tempFile.getAbsolutePath();
+
+            } catch (IOException e) {
+                throw new RuntimeException("Memory Paging Failed: " + e.getMessage());
+            }
+        }
+
+        StringBuilder gcode = new StringBuilder();
+        for (JupitoreParser.MacroContext macro : ctx.macro()) {
+            String macroCode = visit(macro);
+            if (macroCode != null && !macroCode.isEmpty()) {
+                gcode.append(macroCode).append("\n");
+            }
+        }
+
+        String result = gcode.toString();
+        return result.isEmpty() ? "" : result;
     }
 
+    /**
+     * @param ctx
+     * @return String
+     */
+    @Override
+    public String visitMacro(JupitoreParser.MacroContext ctx) {
+        // Reset positions for independent macro execution
+        currentX = 0;
+        currentY = 0;
+        currentZ = 0;
+        relativeMode = false; // start in absolute by default
 
-        
-     if (this.enablePaging) {
-        try {
-            // Create a temporary file to store long gcodes
-            File tempFile = File.createTempFile("bph_scratch_", ".gcode");
-            System.out.println("PAGING ACTIVE: Writing to " + tempFile.getAbsolutePath());
-            tempFile.deleteOnExit(); // JVM cleans up on exit 
+        StringBuilder gcode = new StringBuilder();
 
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
-                for (JupitoreParser.MacroContext macro : ctx.macro()) {
-                    String macroCode = visit(macro);
-                    if (macroCode != null && !macroCode.isEmpty()) {
-                        writer.write(macroCode);
-                        writer.write("\n");
-                        // This flushes the RAM so the garbage collector 
-                        //can take the space used by the 'macroCode' string.
-                        writer.flush(); 
+        if (ctx.TITLE() != null && ctx.STRING() != null) {
+            String macroName = ctx.STRING().getText().replace("\"", "");
+            gcode.append(emitMacroHeader(macroName));
+        }
+
+        if (ctx.statement() != null && !ctx.statement().isEmpty()) {
+            for (JupitoreParser.StatementContext stmt : ctx.statement()) {
+                String stmtCode = visit(stmt);
+                if (stmtCode != null && !stmtCode.isEmpty()) {
+                    for (String line : stmtCode.split("\n")) {
+                        if (!line.isBlank()) {
+                            gcode.append("  ").append(line).append("\n");
+                        }
                     }
                 }
             }
-            
-            return "SUCCESS_PAGED:" + tempFile.getAbsolutePath();
-            
-        } catch (IOException e) {
-            throw new RuntimeException("Memory Paging Failed: " + e.getMessage());
         }
+        limiter.resetToGlobal(); // Reset limits after each macro to ensure safety for the next macro
+        return gcode.toString();
     }
 
-    StringBuilder gcode = new StringBuilder();
-    for (JupitoreParser.MacroContext macro : ctx.macro()) {
-        String macroCode = visit(macro);
-        if (macroCode != null && !macroCode.isEmpty()) {
-            gcode.append(macroCode).append("\n");
-        }
-    }
-
-    String result = gcode.toString();
-    return result.isEmpty() ? "" : result;
-    }
-
- /** 
-  * @param ctx
-  * @return String
-  */
- @Override
-public String visitMacro(JupitoreParser.MacroContext ctx) {
-    // Reset positions for independent macro execution
-    currentX = 0;
-    currentY = 0;
-    currentZ = 0;
-    relativeMode = false;  // start in absolute by default
-
-    StringBuilder gcode = new StringBuilder();
-
-    if (ctx.TITLE() != null && ctx.STRING() != null) {
-        String macroName = ctx.STRING().getText().replace("\"", "");
-        gcode.append(emitMacroHeader(macroName));
-    }
-
-    if (ctx.statement() != null && !ctx.statement().isEmpty()) {
-        for (JupitoreParser.StatementContext stmt : ctx.statement()) {
-            String stmtCode = visit(stmt);
-            if (stmtCode != null && !stmtCode.isEmpty()) {
-                for (String line : stmtCode.split("\n")) {
-                    if (!line.isBlank()) {
-                        gcode.append("  ").append(line).append("\n");
-                    }
-                }
-            }
-        }
-    }
-    limiter.resetToGlobal(); // Reset limits after each macro to ensure safety for the next macro
-    return gcode.toString();
-}
-
-    /** 
+    /**
      * @param ctx
      * @return String
      */
     @Override
     public String visitStatement(JupitoreParser.StatementContext ctx) {
-// ---- 6/17/2026: handle assignments ----
-if (ctx.assignment() != null) {
-    System.out.println("DEBUG: Found assignment, calling visitAssignment");
-    return visit(ctx.assignment());
-}
-        //System.out.println("DEBUG: Visiting statement: " + ctx.getText());
+        // ---- 6/17/2026: handle assignments ----
+        if (ctx.assignment() != null) {
+            System.out.println("DEBUG: Found assignment, calling visitAssignment");
+            return visit(ctx.assignment());
+        }
+        // System.out.println("DEBUG: Visiting statement: " + ctx.getText());
 
         if (ctx.HOME() != null) {
             if (ctx.coordList() != null) {
@@ -190,11 +203,11 @@ if (ctx.assignment() != null) {
 
         if (ctx.brepeat_statement() != null) {
             return visit(ctx.brepeat_statement());
-        } 
+        }
 
         if (ctx.if_statement() != null) {
             return visit(ctx.if_statement());
-    }
+        }
         if (ctx.MOVE() != null) {
             StringBuilder gcode = new StringBuilder("G1 ");
             if (ctx.DIRECTION() != null) {
@@ -221,24 +234,24 @@ if (ctx.assignment() != null) {
         }
 
         // SET_HEATER: set temperature without waiting.
-      if (ctx.SET_HEATER() != null) {
-    if (ctx.TARGET() != null && ctx.expr() != null) {
-        String target = ctx.TARGET().getText().toLowerCase();
-        Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
-        double value = compute.visit(ctx.expr());
-        return emitSetHeater(target, value);
-    }
-}
+        if (ctx.SET_HEATER() != null) {
+            if (ctx.TARGET() != null && ctx.expr() != null) {
+                String target = ctx.TARGET().getText().toLowerCase();
+                Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
+                double value = compute.visit(ctx.expr());
+                return emitSetHeater(target, value);
+            }
+        }
 
         // HEAT: set temperature and wait.
-   if (ctx.HEAT() != null) {
-    if (ctx.TARGET() != null && ctx.expr() != null) {
-        String target = ctx.TARGET().getText().toLowerCase();
-        Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
-        double value = compute.visit(ctx.expr());
-        return emitHeat(target, value, true);
-    }
-}
+        if (ctx.HEAT() != null) {
+            if (ctx.TARGET() != null && ctx.expr() != null) {
+                String target = ctx.TARGET().getText().toLowerCase();
+                Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
+                double value = compute.visit(ctx.expr());
+                return emitHeat(target, value, true);
+            }
+        }
 
         if (ctx.MOVEEX() != null) {
             if (ctx.coordList() != null) {
@@ -302,11 +315,11 @@ if (ctx.assignment() != null) {
         }
 
         // timeout
-       if (ctx.TIMEOUT_SET() != null && ctx.expr() != null) {
-    Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
-    double value = compute.visit(ctx.expr());
-    return emitTimeoutSet(value);
-}
+        if (ctx.TIMEOUT_SET() != null && ctx.expr() != null) {
+            Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
+            double value = compute.visit(ctx.expr());
+            return emitTimeoutSet(value);
+        }
 
         // RELATIVE EXTRUSION check documentation
         if (ctx.RELATIVEEXTRUSION() != null) {
@@ -345,36 +358,36 @@ if (ctx.assignment() != null) {
             return emitCooldown(t);
         }
         // dwell
-       if (ctx.DWELL() != null && ctx.expr() != null) {
-    Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
-    double value = compute.visit(ctx.expr());
+        if (ctx.DWELL() != null && ctx.expr() != null) {
+            Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
+            double value = compute.visit(ctx.expr());
 
-    // unit
-    String unit = "ms"; // default
-    for (int i = 0; i < ctx.getChildCount(); i++) {
-        ParseTree child = ctx.getChild(i);
-        if (child instanceof TerminalNode) {
-            String text = child.getText();
-            if (text.equalsIgnoreCase("S") || text.equalsIgnoreCase("ms")) {
-                unit = text.toLowerCase();
-                break;
+            // unit
+            String unit = "ms"; // default
+            for (int i = 0; i < ctx.getChildCount(); i++) {
+                ParseTree child = ctx.getChild(i);
+                if (child instanceof TerminalNode) {
+                    String text = child.getText();
+                    if (text.equalsIgnoreCase("S") || text.equalsIgnoreCase("ms")) {
+                        unit = text.toLowerCase();
+                        break;
+                    }
+                }
             }
+
+            if (unit.equals("s")) {
+                value *= 1000; // convert seconds to milliseconds
+            }
+
+            return "G4 P" + ((int) value) + "\n";
         }
-    }
-
-    if (unit.equals("s")) {
-        value *= 1000; // convert seconds to milliseconds
-    }
-
-    return "G4 P" + ((int) value) + "\n";
-}
 
         // Set speed (6/17/26: supports user-defined variables)
-       if (ctx.SET_SPEED() != null && ctx.expr() != null) {
-    Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
-    double speed = compute.visit(ctx.expr());
-    return "G1 F" + (int) speed + "\n";
-}
+        if (ctx.SET_SPEED() != null && ctx.expr() != null) {
+            Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
+            double speed = compute.visit(ctx.expr());
+            return "G1 F" + (int) speed + "\n";
+        }
 
         if (ctx.PRINTFILE() != null && ctx.STRING() != null) {
             String file = ctx.STRING().getText().replace("\"", "");
@@ -382,148 +395,145 @@ if (ctx.assignment() != null) {
         }
 
         if (ctx.SET_PRESSURE_ADVANCE() != null && ctx.expr() != null) {
-    Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
-    double value = compute.visit(ctx.expr());
-    return emitSetPressureAdvance(value);
-}
+            Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
+            double value = compute.visit(ctx.expr());
+            return emitSetPressureAdvance(value);
+        }
 
-       if (ctx.SET_FAN() != null && ctx.expr() != null) {
-    Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
-    double value = compute.visit(ctx.expr());
-    return emitSetFan(value);
-}
+        if (ctx.SET_FAN() != null && ctx.expr() != null) {
+            Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
+            double value = compute.visit(ctx.expr());
+            return emitSetFan(value);
+        }
 
+        if (ctx.SET_NOZZLE() != null) {
+            Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
+            double val = compute.visit(ctx.expr());
+            settings.setNozzleDiameter(val);
+            return "";
+        }
+        if (ctx.SET_FILAMENT() != null) {
+            Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
+            double val = compute.visit(ctx.expr());
+            settings.setFilamentDiameter(val);
+            System.out.println("DEBUG: Filament diameter set to " + val);
+            return "";
+        }
+        if (ctx.SET_LAYER_HEIGHT() != null) {
+            Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
+            double val = compute.visit(ctx.expr());
+            settings.setLayerHeight(val);
+            System.out.println("DEBUG: Layer height set to " + val);
+            return "";
+        }
+        if (ctx.SET_EXTRUSION_MULTIPLIER() != null) {
+            Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
+            double val = compute.visit(ctx.expr());
+            settings.setExtrusionMultiplier(val);
+            System.out.println("DEBUG: Extrusion multiplier set to " + val);
+            return "";
+        }
 
-if (ctx.SET_NOZZLE() != null) {
-    Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
-    double val = compute.visit(ctx.expr());
-    settings.setNozzleDiameter(val);
-    return "";
-}
-if (ctx.SET_FILAMENT() != null) {
-    Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
-    double val = compute.visit(ctx.expr());
-    settings.setFilamentDiameter(val);
-    System.out.println("DEBUG: Filament diameter set to " + val);
-    return "";
-}
-if (ctx.SET_LAYER_HEIGHT() != null) {
-    Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
-    double val = compute.visit(ctx.expr());
-    settings.setLayerHeight(val);
-     System.out.println("DEBUG: Layer height set to " + val);  
-    return "";
-}
-if (ctx.SET_EXTRUSION_MULTIPLIER() != null) {
-    Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
-    double val = compute.visit(ctx.expr());
-    settings.setExtrusionMultiplier(val);
-    System.out.println("DEBUG: Extrusion multiplier set to " + val);
-    return "";
-}
+        if (ctx.ENABLE_AUTO_EXTRUDE() != null) {
+            Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
+            double val = compute.visit(ctx.expr());
+            autoExtrudeEnabled = (val != 0.0);
+            System.out.println("DEBUG: Auto-extrude enabled: " + autoExtrudeEnabled);
+            return "";
+        }
+        // added 6/24/26
+        if (ctx.layer_statement() != null) {
+            return visit(ctx.layer_statement());
+        }
 
-if (ctx.ENABLE_AUTO_EXTRUDE() != null) {
-    Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
-    double val = compute.visit(ctx.expr());
-    autoExtrudeEnabled = (val != 0.0);
-     System.out.println("DEBUG: Auto-extrude enabled: " + autoExtrudeEnabled);
-    return "";
-}
-// added 6/24/26
-if (ctx.layer_statement() != null) {
-    return visit(ctx.layer_statement());
-}
-
-//-------------------------------------------
-
+        // -------------------------------------------
 
         // end
         System.out.println("DEBUG: Unhandled statement: " + ctx.getText());
         return "";
 
-
-
     }
 
-/** 
- * @param ctx
- * @return String
- */
-@Override
-public String visitRepeat_statement(JupitoreParser.Repeat_statementContext ctx) {
-    int times = Integer.parseInt(ctx.NUMBER().getText());
-    StringBuilder sb = new StringBuilder();
+    /**
+     * @param ctx
+     * @return String
+     */
+    @Override
+    public String visitRepeat_statement(JupitoreParser.Repeat_statementContext ctx) {
+        int times = Integer.parseInt(ctx.NUMBER().getText());
+        StringBuilder sb = new StringBuilder();
 
-    // repeat does not allow 'i' or functions
-    boolean oldInsideJrepeat = insideJrepeat;
-    insideJrepeat = false;
+        // repeat does not allow 'i' or functions
+        boolean oldInsideJrepeat = insideJrepeat;
+        insideJrepeat = false;
 
-    for (int iteration = 0; iteration < times; iteration++) {
-        for (JupitoreParser.StatementContext stmt : ctx.statement_block().statement()) {
-            // temporarily disable 'i' and function usage checks
-            sb.append(visit(stmt));
-        }
-    }
-
-    // restore previous state just in case
-    insideJrepeat = oldInsideJrepeat;
-
-    return sb.toString();
-}
-
-
-  // we want to nest iterators so im going to test a stack set up
-  protected Stack<Integer> iterationStack = new Stack<>();
-    //protected int currentIteration = 0; // current "i" for Jrepeat
-
-/** 
- * @param ctx
- * @return String
- */
-@Override
-public String visitBrepeat_statement(JupitoreParser.Brepeat_statementContext ctx) {
-
-    int times = Integer.parseInt(ctx.NUMBER().getText());
-    StringBuilder sb = new StringBuilder();
-
-    // Save state
-    double oldCenterX = centerX;
-    double oldCenterY = centerY;
-    double oldX = currentX;
-    double oldY = currentY;
-
-    // Set Jrepeat center
-    centerX = currentX;
-    centerY = currentY;
-       // stack added 4/7/2026 to support nested Brepeats. 
-    for (int i = 0; i < times; i++) {
-
-       // currentIteration = i;
-       iterationStack.push(i);
-        insideJrepeat = true;
-
-        for (JupitoreParser.StatementContext stmt : ctx.statement_block().statement()) {
-
-            String stmtCode = visit(stmt);
-
-            if (stmtCode != null && !stmtCode.isBlank()) {
-                sb.append(stmtCode);
+        for (int iteration = 0; iteration < times; iteration++) {
+            for (JupitoreParser.StatementContext stmt : ctx.statement_block().statement()) {
+                // temporarily disable 'i' and function usage checks
+                sb.append(visit(stmt));
             }
         }
-        iterationStack.pop();
+
+        // restore previous state just in case
+        insideJrepeat = oldInsideJrepeat;
+
+        return sb.toString();
     }
 
-    insideJrepeat = !iterationStack.isEmpty();
- // fixed 4/6/2026
-    // Restore state
-    centerX = oldCenterX;
-    centerY = oldCenterY;
-    //currentX = oldX;
-   // currentY = oldY;
-    // do not restore current x and y in this case. so the tracker stays at the final position
-    return sb.toString();
-}
-    /** 
+    // we want to nest iterators so im going to test a stack set up
+    protected Stack<Integer> iterationStack = new Stack<>();
+    // protected int currentIteration = 0; // current "i" for Jrepeat
+
+    /**
+     * @param ctx
+     * @return String
+     */
+    @Override
+    public String visitBrepeat_statement(JupitoreParser.Brepeat_statementContext ctx) {
+
+        int times = Integer.parseInt(ctx.NUMBER().getText());
+        StringBuilder sb = new StringBuilder();
+
+        // Save state
+        double oldCenterX = centerX;
+        double oldCenterY = centerY;
+        double oldX = currentX;
+        double oldY = currentY;
+
+        // Set Jrepeat center
+        centerX = currentX;
+        centerY = currentY;
+        // stack added 4/7/2026 to support nested Brepeats.
+        for (int i = 0; i < times; i++) {
+
+            // currentIteration = i;
+            iterationStack.push(i);
+            insideJrepeat = true;
+
+            for (JupitoreParser.StatementContext stmt : ctx.statement_block().statement()) {
+
+                String stmtCode = visit(stmt);
+
+                if (stmtCode != null && !stmtCode.isBlank()) {
+                    sb.append(stmtCode);
+                }
+            }
+            iterationStack.pop();
+        }
+
+        insideJrepeat = !iterationStack.isEmpty();
+        // fixed 4/6/2026
+        // Restore state
+        centerX = oldCenterX;
+        centerY = oldCenterY;
+        // currentX = oldX;
+        // currentY = oldY;
+        // do not restore current x and y in this case. so the tracker stays at the
+        // final position
+        return sb.toString();
+    }
+
+    /**
      * @param ctx
      * @return String
      */
@@ -548,17 +558,15 @@ public String visitBrepeat_statement(JupitoreParser.Brepeat_statementContext ctx
         return sb.toString();
     }
 
+    // Handle LAYER block
+    @Override
+    public String visitLayer_statement(JupitoreParser.Layer_statementContext ctx) {
+        int layers = Integer.parseInt(ctx.NUMBER().getText());
+        LayerHandler layerHandler = new LayerHandler(this, settings);
+        return layerHandler.handleLayer(layers, ctx.statement_block());
+    }
 
-
-// Handle LAYER block
-@Override
-public String visitLayer_statement(JupitoreParser.Layer_statementContext ctx) {
-    int layers = Integer.parseInt(ctx.NUMBER().getText());
-    LayerHandler layerHandler = new LayerHandler(this, settings);
-    return layerHandler.handleLayer(layers, ctx.statement_block());
-}
-
-    /** 
+    /**
      * @param ctx
      * @return String
      */
@@ -581,61 +589,65 @@ public String visitLayer_statement(JupitoreParser.Layer_statementContext ctx) {
         return sensor + " " + op + " " + value;
     }
 
-    /** 
+    /**
      * @param ctx
      * @return String
      */
-@Override
-public String visitCoordList(JupitoreParser.CoordListContext ctx) {
-    // Reset temporary storage
-    targetX = Double.NaN;
-    targetY = Double.NaN;
-    targetZ = Double.NaN;
-    hasManualE = false;
-    manualEValue = 0.0;
+    @Override
+    public String visitCoordList(JupitoreParser.CoordListContext ctx) {
+        // Reset temporary storage
+        targetX = Double.NaN;
+        targetY = Double.NaN;
+        targetZ = Double.NaN;
+        hasManualE = false;
+        manualEValue = 0.0;
 
-    // First pass: collect all coordinates
-    for (JupitoreParser.CoordContext coordCtx : ctx.coord()) {
-        visit(coordCtx);
+        // First pass: collect all coordinates
+        for (JupitoreParser.CoordContext coordCtx : ctx.coord()) {
+            visit(coordCtx);
+        }
+
+        // Build the output string
+        StringBuilder sb = new StringBuilder();
+        boolean isMove = false;
+        if (!Double.isNaN(targetX)) {
+            sb.append(" X").append(String.format("%.3f", targetX));
+            isMove = true;
+        }
+        if (!Double.isNaN(targetY)) {
+            sb.append(" Y").append(String.format("%.3f", targetY));
+            isMove = true;
+        }
+        if (!Double.isNaN(targetZ)) {
+            sb.append(" Z").append(String.format("%.3f", targetZ));
+            isMove = true;
+        }
+
+        // Decide about extrusion
+        if (hasManualE) {
+            sb.append(" E").append(String.format("%.3f", manualEValue));
+        } else if (autoExtrudeEnabled && isMove) {
+            // Auto‑extrude: compute distance from current position to target
+            double dx = Double.isNaN(targetX) ? 0 : targetX - currentX;
+            double dy = Double.isNaN(targetY) ? 0 : targetY - currentY;
+            double dz = Double.isNaN(targetZ) ? 0 : targetZ - currentZ;
+            double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+            double autoE = settings.calculateExtrusion(distance);
+            sb.append(" E").append(String.format("%.3f", autoE));
+        }
+        // else: no extrusion (travel move)
+
+        // Update current position
+        if (!Double.isNaN(targetX))
+            currentX = targetX;
+        if (!Double.isNaN(targetY))
+            currentY = targetY;
+        if (!Double.isNaN(targetZ))
+            currentZ = targetZ;
+
+        return sb.toString().trim();
     }
 
-    // Build the output string
-    StringBuilder sb = new StringBuilder();
-    boolean isMove = false;
-    if (!Double.isNaN(targetX)) {
-        sb.append(" X").append(String.format("%.3f", targetX));
-        isMove = true;
-    }
-    if (!Double.isNaN(targetY)) {
-        sb.append(" Y").append(String.format("%.3f", targetY));
-        isMove = true;
-    }
-    if (!Double.isNaN(targetZ)) {
-        sb.append(" Z").append(String.format("%.3f", targetZ));
-        isMove = true;
-    }
-
-    // Decide about extrusion
-    if (hasManualE) {
-        sb.append(" E").append(String.format("%.3f", manualEValue));
-    } else if (autoExtrudeEnabled && isMove) {
-        // Auto‑extrude: compute distance from current position to target
-        double dx = Double.isNaN(targetX) ? 0 : targetX - currentX;
-        double dy = Double.isNaN(targetY) ? 0 : targetY - currentY;
-        double dz = Double.isNaN(targetZ) ? 0 : targetZ - currentZ;
-        double distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
-        double autoE = settings.calculateExtrusion(distance);
-        sb.append(" E").append(String.format("%.3f", autoE));
-    }
-    // else: no extrusion (travel move)
-
-    // Update current position
-    if (!Double.isNaN(targetX)) currentX = targetX;
-    if (!Double.isNaN(targetY)) currentY = targetY;
-    if (!Double.isNaN(targetZ)) currentZ = targetZ;
-
-    return sb.toString().trim();
-}
     protected boolean relativeMode = false;
 
     protected double currentX = 0;
@@ -643,128 +655,145 @@ public String visitCoordList(JupitoreParser.CoordListContext ctx) {
     protected double currentZ = 0;
     protected boolean insideJrepeat = false;
 
-/** 
- * @param ctx
- * @return String
- */
-@Override
-public String visitCoord(JupitoreParser.CoordContext ctx) {
-    String axis = ctx.X() != null ? "X" :
-                  ctx.Y() != null ? "Y" :
-                  ctx.Z() != null ? "Z" :
-                  ctx.E() != null ? "E" : "";
+    /**
+     * @param ctx
+     * @return String
+     */
+    @Override
+    public String visitCoord(JupitoreParser.CoordContext ctx) {
+        String axis = ctx.X() != null ? "X"
+                : ctx.Y() != null ? "Y" : ctx.Z() != null ? "Z" : ctx.E() != null ? "E" : "";
 
-          if (insideLayer && axis.equals("Z")) {
-        throw new RuntimeException(
-            "ERROR: Z-axis movement is not allowed inside Layer blocks. " +
-            "Layer automatically manages Z-height."
-        );
-    }         
-    // Handle E axis separately
-    if (axis.equals("E")) {
-        if (ctx.expr() != null) {
-            // Manual extrusion value
-            String op = ctx.getChild(1).getText();
-            String exprText = ctx.expr().getText();
-            boolean isInLoop = !iterationStack.isEmpty();
-            if (!isInLoop && exprText.matches(".*\\bi\\b.*")) {
-                throw new RuntimeException("ERROR: 'i' iterator is only allowed inside Brepeat loops.");
-            }
-            int activeIteration = isInLoop ? iterationStack.peek() : 0;
-            Compute compute = new Compute(this, activeIteration);
-            double value = compute.visit(ctx.expr());
-            double finalE = value * settings.getExtrusionMultiplier();
-            hasManualE = true;
-            manualEValue = finalE;
+        if (insideLayer && axis.equals("Z")) {
+            throw new RuntimeException(
+                    "ERROR: Z-axis movement is not allowed inside Layer blocks. " +
+                            "Layer automatically manages Z-height.");
         }
-        // If there is no expression, we ignore (auto‑extrude will be handled later if enabled)
+        // Handle E axis separately
+        if (axis.equals("E")) {
+            if (ctx.expr() != null) {
+                // Manual extrusion value
+                String op = ctx.getChild(1).getText();
+                String exprText = ctx.expr().getText();
+                boolean isInLoop = !iterationStack.isEmpty();
+                if (!isInLoop && exprText.matches(".*\\bi\\b.*")) {
+                    throw new RuntimeException("ERROR: 'i' iterator is only allowed inside Brepeat loops.");
+                }
+                int activeIteration = isInLoop ? iterationStack.peek() : 0;
+                Compute compute = new Compute(this, activeIteration);
+                double value = compute.visit(ctx.expr());
+                double finalE = value * settings.getExtrusionMultiplier();
+                hasManualE = true;
+                manualEValue = finalE;
+            }
+            // If there is no expression, we ignore (auto‑extrude will be handled later if
+            // enabled)
+            return "";
+        }
+
+        // For X, Y, Z axes
+        String op = ctx.getChild(1).getText();
+        String exprText = ctx.expr().getText();
+        boolean isInLoop = !iterationStack.isEmpty();
+        if (!isInLoop && exprText.matches(".*\\bi\\b.*")) {
+            throw new RuntimeException("ERROR: 'i' iterator is only allowed inside Brepeat loops.");
+        }
+        int activeIteration = isInLoop ? iterationStack.peek() : 0;
+        Compute compute = new Compute(this, activeIteration);
+        double value = compute.visit(ctx.expr());
+
+        double currentPos = getCurrent(axis);
+        double newPos;
+
+        if (relativeMode) {
+            // In relative mode, the expression gives the delta to add
+            double delta = value;
+            // Apply operation (though for relative, =, +=, -= are usually the same as
+            // delta)
+            switch (op) {
+                case "=":
+                case "+=":
+                    delta = value;
+                    break;
+                case "-=":
+                    delta = -value;
+                    break;
+                case "*=":
+                case "/=":
+                    delta = value;
+                    break;
+            }
+            newPos = currentPos + delta;
+        } else {
+            // Absolute mode: apply operation (e.g., +=, =, etc.) to current position
+            newPos = applyOp(currentPos, op, value);
+        }
+
+        // Store the target position (do NOT update currentX/Y/Z yet)
+        switch (axis) {
+            case "X":
+                targetX = newPos;
+                break;
+            case "Y":
+                targetY = newPos;
+                break;
+            case "Z":
+                targetZ = newPos;
+                break;
+        }
+        // After updating current position, check limits
+        if (!Double.isNaN(targetX))
+            limiter.checkAndMove("X", targetX);
+        if (!Double.isNaN(targetY))
+            limiter.checkAndMove("Y", targetY);
+        if (!Double.isNaN(targetZ))
+            limiter.checkAndMove("Z", targetZ);
         return "";
     }
 
-    // For X, Y, Z axes
-    String op = ctx.getChild(1).getText();
-    String exprText = ctx.expr().getText();
-    boolean isInLoop = !iterationStack.isEmpty();
-    if (!isInLoop && exprText.matches(".*\\bi\\b.*")) {
-        throw new RuntimeException("ERROR: 'i' iterator is only allowed inside Brepeat loops.");
+    /**
+     * @param axis
+     * @return double
+     */
+    private double getCurrent(String axis) {
+        switch (axis) {
+            case "X":
+                return currentX;
+            case "Y":
+                return currentY;
+            case "Z":
+                return currentZ;
+            case "E":
+                return 0;
+        }
+        return 0;
     }
-    int activeIteration = isInLoop ? iterationStack.peek() : 0;
-    Compute compute = new Compute(this, activeIteration);
-    double value = compute.visit(ctx.expr());
 
-    double currentPos = getCurrent(axis);
-    double newPos;
-
-    if (relativeMode) {
-        // In relative mode, the expression gives the delta to add
-        double delta = value;
-        // Apply operation (though for relative, =, +=, -= are usually the same as delta)
+    /**
+     * @param current
+     * @param op
+     * @param value
+     * @return double
+     */
+    // Helper to apply the operation and update current position
+    private double applyOp(double current, String op, double value) {
         switch (op) {
             case "=":
+                return value; // Set the value
             case "+=":
-                delta = value;
-                break;
+                return current + value;
             case "-=":
-                delta = -value;
-                break;
+                return current - value;
             case "*=":
+                return current * value;
             case "/=":
-                delta = value;
-                break;
+                return current / value;
+            default:
+                throw new RuntimeException("Unsupported operation: " + op);
         }
-        newPos = currentPos + delta;
-    } else {
-        // Absolute mode: apply operation (e.g., +=, =, etc.) to current position
-        newPos = applyOp(currentPos, op, value);
     }
 
-    // Store the target position (do NOT update currentX/Y/Z yet)
-    switch (axis) {
-        case "X": targetX = newPos; break;
-        case "Y": targetY = newPos; break;
-        case "Z": targetZ = newPos; break;
-    }
-    // After updating current position, check limits
-if (!Double.isNaN(targetX)) limiter.checkAndMove("X", targetX);
-if (!Double.isNaN(targetY)) limiter.checkAndMove("Y", targetY);
-if (!Double.isNaN(targetZ)) limiter.checkAndMove("Z", targetZ);
-    return "";
-}
-
-/** 
- * @param axis
- * @return double
- */
-private double getCurrent(String axis) {
-    switch (axis) {
-        case "X": return currentX;
-        case "Y": return currentY;
-        case "Z": return currentZ;
-        case "E": return 0;
-    }
-    return 0;
-}
-
-
-  /** 
-   * @param current
-   * @param op
-   * @param value
-   * @return double
-   */
-  // Helper to apply the operation and update current position
-private double applyOp(double current, String op, double value) {
-    switch (op) {
-        case "=": return value;        // Set the value
-        case "+=": return current + value;
-        case "-=": return current - value;
-        case "*=": return current * value;
-        case "/=": return current / value;
-        default: throw new RuntimeException("Unsupported operation: " + op);
-    }
-}
-
-    /** 
+    /**
      * @return String
      */
     @Override
@@ -772,7 +801,7 @@ private double applyOp(double current, String op, double value) {
         return "";
     }
 
-    /** 
+    /**
      * @param aggregate
      * @param nextResult
      * @return String
@@ -786,14 +815,14 @@ private double applyOp(double current, String op, double value) {
         return aggregate + nextResult;
     }
 
-@Override
-public String visitAssignment(JupitoreParser.AssignmentContext ctx) {
-    String varName = ctx.ID().getText();
-    Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
-    double value = compute.visit(ctx.expr());
-    variables.put(varName, value);
-    System.out.println("ASSIGN: " + varName + " = " + value);
-    return "";
-}
-    
+    @Override
+    public String visitAssignment(JupitoreParser.AssignmentContext ctx) {
+        String varName = ctx.ID().getText();
+        Compute compute = new Compute(this, iterationStack.isEmpty() ? 0 : iterationStack.peek());
+        double value = compute.visit(ctx.expr());
+        variables.put(varName, value);
+        System.out.println("ASSIGN: " + varName + " = " + value);
+        return "";
+    }
+
 }

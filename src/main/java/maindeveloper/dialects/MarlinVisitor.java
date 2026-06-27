@@ -23,17 +23,25 @@ public class MarlinVisitor extends GCodeVisitor {
         // 4/4/2026
         if (wait) {
             switch (target) {
-                case "extruder": return "M109 R" + (int)value + "\n";
-                case "bed":      return "M190 R" + (int)value + "\n";
-                case "chamber":  return "M141 S" + (int)value + "\n";
-                default: return "";
+                case "extruder":
+                    return "M109 R" + (int) value + "\n";
+                case "bed":
+                    return "M190 R" + (int) value + "\n";
+                case "chamber":
+                    return "M141 S" + (int) value + "\n";
+                default:
+                    return "";
             }
         } else {
             switch (target) {
-                case "extruder": return "M104 S" + (int)value + "\n";
-                case "bed":      return "M140 S" + (int)value + "\n";
-                case "chamber":  return "M141 S" + (int)value + "\n";
-                default: return "";
+                case "extruder":
+                    return "M104 S" + (int) value + "\n";
+                case "bed":
+                    return "M140 S" + (int) value + "\n";
+                case "chamber":
+                    return "M141 S" + (int) value + "\n";
+                default:
+                    return "";
             }
         }
     }
@@ -67,17 +75,21 @@ public class MarlinVisitor extends GCodeVisitor {
         } else {
             // Turn off specific heater
             switch (target) {
-                case "extruder": return "M104 S0\n";
-                case "bed":      return "M140 S0\n";
-                case "chamber":  return "M141 S0\n";
-                default: return "";
+                case "extruder":
+                    return "M104 S0\n";
+                case "bed":
+                    return "M140 S0\n";
+                case "chamber":
+                    return "M141 S0\n";
+                default:
+                    return "";
             }
         }
     }
 
     @Override
     protected String emitTimeoutSet(double seconds) {
-        return "M84 S" + (int)seconds + "\n"; // Marlin idle timeout
+        return "M84 S" + (int) seconds + "\n"; // Marlin idle timeout
     }
 
     @Override
@@ -98,7 +110,7 @@ public class MarlinVisitor extends GCodeVisitor {
     @Override
     protected String emitSetFan(double value) {
         // SET_FAN...Marlin uses M106
-        int marlinSpeed = (int)(value * 255);
+        int marlinSpeed = (int) (value * 255);
         return "M106 S" + marlinSpeed + "\n";
     }
 

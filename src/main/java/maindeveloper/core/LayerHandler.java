@@ -13,21 +13,20 @@ public class LayerHandler {
     }
 
     public String handleLayer(int layers,
-                              JupitoreParser.Statement_blockContext block) {
+            JupitoreParser.Statement_blockContext block) {
 
         StringBuilder sb = new StringBuilder();
 
         for (int i = 0; i < layers; i++) {
 
+            boolean oldInsideLayer = visitor.insideLayer;
 
-       boolean oldInsideLayer = visitor.insideLayer;
-        
-        try {
-            visitor.insideLayer = true;
-            sb.append(visitor.visit(block));
-        } finally {
-            visitor.insideLayer = oldInsideLayer;
-        }
+            try {
+                visitor.insideLayer = true;
+                sb.append(visitor.visit(block));
+            } finally {
+                visitor.insideLayer = oldInsideLayer;
+            }
 
             // Raise Z unless this is the last layer
             if (i < layers - 1) {
@@ -36,8 +35,8 @@ public class LayerHandler {
 
                 sb.append("G91\n");
                 sb.append("G1 Z")
-                  .append(settings.getLayerHeight())
-                  .append(" F300\n");
+                        .append(settings.getLayerHeight())
+                        .append(" F300\n");
 
                 // Restore user's positioning mode
                 sb.append(wasRelative ? "G91\n" : "G90\n");

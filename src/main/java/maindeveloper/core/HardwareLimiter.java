@@ -2,12 +2,12 @@ package maindeveloper.core;
 
 public class HardwareLimiter {
     private double x = 0, y = 0, z = 0;
-    
+
     // These will now be set dynamically
     private double limitX;
     private double limitY;
     private double limitZ;
-    
+
     private double globalX;
     private double globalY;
     private double globalZ;
@@ -16,29 +16,33 @@ public class HardwareLimiter {
     public HardwareLimiter(double maxX, double maxY, double maxZ) {
 
         System.out.println("=== DEBUG: HardwareLimiter constructor ===");
-    System.out.println("Received maxX = " + maxX);
-    System.out.println("Received maxY = " + maxY);
-    System.out.println("Received maxZ = " + maxZ);
-    
+        System.out.println("Received maxX = " + maxX);
+        System.out.println("Received maxY = " + maxY);
+        System.out.println("Received maxZ = " + maxZ);
+
         this.globalX = maxX;
         this.globalY = maxY;
         this.globalZ = maxZ;
         resetToGlobal(); // Initializes limitX/Y/Z to the global values
     }
 
-  public void checkAndMove(String axis, double newValue) {
-    double limit = getLimitForAxis(axis);
-    
-    // took this away -----> Used Math.abs(newValue) to treat negative positions as positive magnitude
-    if (newValue < 0 || newValue > limit) {
-        throw new RuntimeException(axis + " position " + newValue + " out of bounds (0-" + limit + ")");
-    
-    }
+    public void checkAndMove(String axis, double newValue) {
+        double limit = getLimitForAxis(axis);
 
-    if (axis.equals("X")) x = newValue;
-    else if (axis.equals("Y")) y = newValue;
-    else if (axis.equals("Z")) z = newValue;
-}
+        // took this away -----> Used Math.abs(newValue) to treat negative positions as
+        // positive magnitude
+        if (newValue < 0 || newValue > limit) {
+            throw new RuntimeException(axis + " position " + newValue + " out of bounds (0-" + limit + ")");
+
+        }
+
+        if (axis.equals("X"))
+            x = newValue;
+        else if (axis.equals("Y"))
+            y = newValue;
+        else if (axis.equals("Z"))
+            z = newValue;
+    }
 
     private double getLimitForAxis(String axis) {
         return axis.equals("X") ? limitX : (axis.equals("Y") ? limitY : limitZ);

@@ -25,10 +25,10 @@ public class FirmwareAdapterTest {
     @Test
     void visitorsCanParseSameProgram() {
         String source = """
-            M.title "test"
-            Heat extruder = 200
-            M.end
-            """;
+                M.title "test"
+                Heat extruder = 200
+                M.end
+                """;
 
         var tree = TestUtils.parse(source);
         var profile = new PrinterProfile();

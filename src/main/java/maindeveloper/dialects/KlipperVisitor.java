@@ -19,17 +19,25 @@ public class KlipperVisitor extends GCodeVisitor {
     protected String emitHeat(String target, double value, boolean wait) {
         if (wait) {
             switch (target) {
-                case "extruder": return "M109 S" + (int)value + "\n";
-                case "bed":      return "M190 S" + (int)value + "\n";
-                case "chamber":  return "M141 S" + (int)value + "\n";
-                default: return "";
+                case "extruder":
+                    return "M109 S" + (int) value + "\n";
+                case "bed":
+                    return "M190 S" + (int) value + "\n";
+                case "chamber":
+                    return "M141 S" + (int) value + "\n";
+                default:
+                    return "";
             }
         } else {
             switch (target) {
-                case "extruder": return "M104 S" + (int)value + "\n";
-                case "bed":      return "M140 S" + (int)value + "\n";
-                case "chamber":  return "M141 S" + (int)value + "\n";
-                default: return "";
+                case "extruder":
+                    return "M104 S" + (int) value + "\n";
+                case "bed":
+                    return "M140 S" + (int) value + "\n";
+                case "chamber":
+                    return "M141 S" + (int) value + "\n";
+                default:
+                    return "";
             }
         }
     }
@@ -60,17 +68,21 @@ public class KlipperVisitor extends GCodeVisitor {
             return "TURN_OFF_HEATERS\n";
         } else {
             switch (target) {
-                case "extruder": return "M104 S0\n";
-                case "bed":      return "M140 S0\n";
-                case "chamber":  return "M141 S0\n";
-                default: return "";
+                case "extruder":
+                    return "M104 S0\n";
+                case "bed":
+                    return "M140 S0\n";
+                case "chamber":
+                    return "M141 S0\n";
+                default:
+                    return "";
             }
         }
     }
 
     @Override
     protected String emitTimeoutSet(double seconds) {
-        return "SET_IDLE_TIMEOUT TIMEOUT=" + (int)seconds + "\n";
+        return "SET_IDLE_TIMEOUT TIMEOUT=" + (int) seconds + "\n";
     }
 
     @Override
@@ -90,7 +102,7 @@ public class KlipperVisitor extends GCodeVisitor {
 
     @Override
     protected String emitSetFan(double value) {
-        return "SET_FAN SPEED=" + (int)value + "\n";
+        return "SET_FAN SPEED=" + (int) value + "\n";
     }
 
     @Override

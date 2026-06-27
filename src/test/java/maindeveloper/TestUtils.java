@@ -9,14 +9,11 @@ public class TestUtils {
 
         CharStream input = CharStreams.fromString(source);
 
-        JupitoreLexer lexer =
-            new JupitoreLexer(input);
+        JupitoreLexer lexer = new JupitoreLexer(input);
 
-        CommonTokenStream tokens =
-            new CommonTokenStream(lexer);
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
 
-        JupitoreParser parser =
-            new JupitoreParser(tokens);
+        JupitoreParser parser = new JupitoreParser(tokens);
 
         return parser.program();
     }
