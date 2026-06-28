@@ -53,7 +53,17 @@ public abstract class GCodeVisitor extends JupitoreBaseVisitor<String> {
         this.settings.setExtrusionMultiplier(profile.getExtrusionMultiplier());
     }
 
-    // Abstract firmware-specific methods ----
+    // -------------------------------------------------------------------------
+    // ABSTRACT FIRMWARE METHODS
+    // Each firmware adapter (KlipperVisitor, MarlinVisitor, etc.) implements
+    // these methods to produce the correct G-code for that target.
+    // 
+    // NOTE: Some method names are Klipper-centric for historical reasons.
+    // Their INTENT is generic (e.g., "load a bed mesh", "probe calibration"),
+    // even if the name reflects Klipper's command. Future refactoring could
+    // rename these to be more firmware-agnostic without changing the logic.
+    // -------------------------------------------------------------------------
+
     protected abstract String emitMacroHeader(String macroName);
 
     protected abstract String emitHeat(String target, double value, boolean wait);
@@ -70,23 +80,31 @@ public abstract class GCodeVisitor extends JupitoreBaseVisitor<String> {
 
     protected abstract String emitTimeoutSet(double seconds);
 
+    // Klipper-centric name — intent: load a bed mesh profile
     protected abstract String emitLoadBedMesh(String profile);
 
+    // Klipper-centric name — intent: calibrate the probe
     protected abstract String emitProbeCalibrate();
 
+    // Klipper-centric name — intent: set pressure advance / linear advance
     protected abstract String emitSetPressureAdvance(double value);
 
     protected abstract String emitSetFan(double value);
 
+    // Klipper-centric name — intent: call another macro/subroutine
     protected abstract String emitMacroCall(String macroName);
 
     protected abstract String emitBedMeshCalibrate(); // LEVEL or BED_MESH_CALIBRATE
 
     protected abstract String emitPrintFile(String filename);
 
+    // Klipper-centric — intent: start a conditional block (if/endif)
     protected abstract String emitIfStart(String condition);
 
+    // Klipper-centric — intent: end a conditional block (if/endif)
     protected abstract String emitIfEnd();
+
+    // -------------------------------------------------------------------------
 
     /**
      * @param ctx
