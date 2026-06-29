@@ -14,6 +14,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
     container.innerHTML = "";
 
+  
+    container.style.maxHeight = "400px";
+    container.style.overflowY = "auto";
+    container.style.paddingRight = "20px"; 
+    container.style.scrollbarWidth = "thin";
+container.style.scrollbarColor = "#000000 #d3c9c6";
+
     Object.entries(window.THEME_MAP).forEach(([key, theme]) => {
       const div = document.createElement("div");
       div.className = "theme-option";
