@@ -418,8 +418,23 @@
                             <td><span class="inline-code token-DWELL">Dwell</span></td>
                             <td><span class="inline-code token-DWELL">Dwell</span> <span class="token-NUMBER">time</span> <span class="token-S">S</span>|<span class="token-S">ms</span> (optional unit)</td>
                             <td><span class="inline-code token-DWELL">Dwell</span> <span class="token-NUMBER">0.5</span> <span class="token-S">S</span> or <span class="inline-code token-DWELL">Dwell</span> <span class="token-NUMBER">500</span> <span class="token-S">ms</span></td>
-                            <td>Pauses execution for the specified duration. If unit is omitted, defaults to seconds. <code>S</code> indicates seconds, <code>ms</code> indicates milliseconds. Example: <code>Dwell 0.5</code> pauses for 0.5 seconds.</td>
+                            <td>Pauses execution for the specified duration. If unit is omitted, defaults to seconds. <code>S</code> indicates seconds, <code>ms</code> indicates milliseconds.</td>
                         </tr>
+
+                       
+                        <tr>
+                            <td><span class="inline-code token-INSERTGCODE">InsertGcode</span></td>
+                            <td>
+                                <span class="inline-code token-INSERTGCODE">InsertGcode</span> <span class="token-STRING">"filename.gcode"</span><br>
+                                <span class="inline-code token-INSERTGCODE">InsertGcode</span> <span class="token-STRING">"filename.gcode"</span> <span class="token-ID">reference</span>
+                            </td>
+                            <td>
+                                <span class="inline-code token-INSERTGCODE">InsertGcode</span> <span class="token-STRING">"part_A.gcode"</span><br>
+                                <span class="inline-code token-INSERTGCODE">InsertGcode</span> <span class="token-STRING">"part_B.gcode"</span> <span class="token-ID">reference</span>
+                            </td>
+                            <td>Includes an external G-code file. In embed mode (default), the compiler reads the file and injects its contents into the output. In reference mode, the compiler emits a firmware command to reference the file on the printer's SD card.</td>
+                        </tr>
+
                     </tbody>
                 </table>
             </section>
@@ -698,6 +713,43 @@
 <span class="line">    <span class="token-RESUME">Resume</span></span>
 <span class="line">    <span class="token-COOLDOWN">Cooldown</span></span>
 <span class="line"><span class="token-MEND">M.end</span></span>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2>External G-code Insertion (InsertGcode)</h2>
+                <p>The <span class="inline-code token-INSERTGCODE">InsertGcode</span> command allows you to include external G-code files in your BPH script. This is useful for print farm loops, wrapping existing slicer outputs, and modular print workflows.</p>
+
+                <h3>File Location</h3>
+                <p>The G-code file you want to include must be located in the <strong>same folder as your <code>.bph</code> script</strong>. For example, if your script is at <code>C:/My_Prints/my_macro.bph</code>, the compiler will look for <code>C:/My_Prints/part_A.gcode</code> when you use:</p>
+                <div class="code-block">
+<span class="line"><span class="token-INSERTGCODE">InsertGcode</span> <span class="token-STRING">"part_A.gcode"</span></span>
+                </div>
+
+                <h3>Dual-Mode Operation</h3>
+                <p>The command operates in two modes:</p>
+                <ul>
+                    <li><strong>Embed Mode (default):</strong> <span class="inline-code token-INSERTGCODE">InsertGcode</span> <span class="token-STRING">"file.gcode"</span>
+                        <ul>
+                            <li>Reads the file at <strong>compile time</strong> and injects its raw G-code directly into the compiler's output stream.</li>
+                            <li>Best for small to medium-sized files.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Reference Mode:</strong> <span class="inline-code token-INSERTGCODE">InsertGcode</span> <span class="token-STRING">"file.gcode"</span> <span class="token-ID">reference</span> or <span class="inline-code token-INSERTGCODE">InsertGcode</span> <span class="token-ID">reference</span> <span class="token-STRING">"file.gcode"</span>
+                        <ul>
+                            <li>Emits optimized firmware instructions (e.g., <code>M98</code> for Klipper, <code>M23</code> for Marlin) to target the printer's local SD card directory.</li>
+                            <li>Use this mode for <strong>large files</strong> to avoid performance issues.</li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <h3>Example Usage</h3>
+                <div class="code-block">
+<span class="line"><span class="token-COMMENT"># Include a small G-code file directly</span></span>
+<span class="line"><span class="token-INSERTGCODE">InsertGcode</span> <span class="token-STRING">"part_A.gcode"</span></span>
+<span class="line"></span>
+<span class="line"><span class="token-COMMENT"># Include a large G-code file by reference</span></span>
+<span class="line"><span class="token-INSERTGCODE">InsertGcode</span> <span class="token-STRING">"part_B.gcode"</span> <span class="token-ID">reference</span></span>
                 </div>
             </section>
 
