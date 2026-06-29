@@ -862,6 +862,29 @@ body {
   color: #e94560;
 }
 
+#themeSelector {
+  scrollbar-width: thin;
+  scrollbar-color: #666 #1a1a1a;
+}
+
+#themeSelector::-webkit-scrollbar {
+  width: 8px;
+}
+
+#themeSelector::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+#themeSelector::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 4px;
+}
+
+#themeSelector::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
 /* this is for gcode ui */
 /* G-Code Folder Settings */
 .gcode-folder-setting {
