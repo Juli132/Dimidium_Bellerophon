@@ -27,6 +27,10 @@ jobs:
         java-version: '19'
         distribution: 'temurin'
         cache: maven
+
+    - name: Set execute permission for Maven Wrapper
+      run: chmod +x mvnw
+      # setting permissions 
         
     - name: Compile, test, and package
       run: ./mvnw -B clean package --file pom.xml
